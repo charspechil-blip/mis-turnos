@@ -1,0 +1,10 @@
+{
+  "name":"Mis Turnos — Charles",
+  "short_name":"Mis Turnos",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f7f8f7",
+  "theme_color":"#ffffff",
+  "lang":"es",
+  "icons":[]
+}
