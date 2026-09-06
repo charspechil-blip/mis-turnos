@@ -8,24 +8,49 @@
 <title>Mis Turnos</title>
 <style>
 :root{--morning:#2878d0;--afternoon:#e58b22;--free:#20a35a;--weekend:#d64545;--text:#202124;--muted:#777;--line:#e9e9e9;--bg:#f7f8f7}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:14px 10px}.app{max-width:560px;margin:auto}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:14px 10px 86px}.app{max-width:560px;margin:auto}
 .card{background:#fff;border-radius:22px;padding:17px;box-shadow:0 7px 28px rgba(0,0,0,.07)}
-header{display:flex;align-items:center;justify-content:space-between;gap:10px}.nav,.action{border:1px solid var(--line);background:#fff;border-radius:12px;min-width:42px;height:42px;cursor:pointer}.nav{font-size:23px}.title{text-align:center;flex:1;min-width:0}h1{font-size:21px;margin:0;font-weight:750}.sub{font-size:12px;color:var(--muted);margin-top:3px}
-.weekdays,.grid{display:grid;grid-template-columns:repeat(7,1fr)}.weekdays{margin-top:14px}.wd{text-align:center;font-size:12px;font-weight:750;color:#666;padding:8px 0}.wd.weekend{color:var(--weekend)}
-.day{height:62px;display:flex;align-items:center;justify-content:center}.num{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;border:2px solid transparent}.weekend .num{color:var(--weekend)}.shift1 .num{color:var(--morning)}.shift2 .num{color:var(--afternoon)}.free .num{border:3px solid var(--free);color:var(--free);font-weight:850}.free.weekend .num{border-color:var(--free);color:var(--weekend)}
-.empty{height:62px}.legend{border-top:1px solid var(--line);margin-top:8px;padding-top:14px;display:flex;justify-content:center;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:#666}.legend-item{display:flex;align-items:center;gap:6px}.swatch{width:12px;height:12px;border-radius:50%;display:inline-block}.morning{background:var(--morning)}.afternoon{background:var(--afternoon)}.free-s{border:2px solid var(--free);width:14px;height:14px}
-.toolbar{display:flex;gap:8px;margin-top:14px}.action{flex:1;font-size:13px;font-weight:650;padding:0 10px}.action.primary{background:#f3f7ff;border-color:#d9e6ff}
-.notice{margin-top:10px;padding:10px 12px;border-radius:12px;background:#fafafa;font-size:12px;color:#666;line-height:1.4}.notice strong{color:var(--text)}
-.file{display:none}.settings{margin-top:12px;border-top:1px solid var(--line);padding-top:12px;display:none}.settings.open{display:block}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.toggle{accent-color:var(--free)}select{font-size:16px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff}
-.status{margin-top:8px;font-size:12px;color:var(--muted)}@media(max-width:390px){.card{padding:13px}.day,.empty{height:56px}.num{width:36px;height:36px;font-size:14px}.action{font-size:12px}}
+.app-header{display:flex;align-items:center;gap:11px;margin-bottom:14px}.app-icon{width:42px;height:42px;border-radius:12px;border:2px solid var(--free);display:grid;place-items:center;color:var(--free);font-size:24px;font-weight:800;flex:none}.app-title{flex:1;min-width:0}.app-title h1{font-size:20px;margin:0;font-weight:800}.app-title .sub{font-size:12px;color:var(--muted);margin-top:2px}.settings-btn{border:1px solid var(--line);background:#fff;border-radius:12px;width:42px;height:42px;font-size:20px;cursor:pointer}
+.view{display:none}.view.active{display:block}
+.today-card{border:1px solid #edf0ee;border-radius:18px;padding:18px 15px;text-align:center;background:linear-gradient(180deg,#fff 0%,#fbfdfb 100%)}.eyebrow{font-size:13px;font-weight:750;color:#333}.today-date{font-size:15px;color:var(--muted);margin-top:3px}.shift-circle{width:104px;height:104px;margin:15px auto 9px;border-radius:50%;display:grid;place-items:center;font-size:48px}.shift-circle.morning{background:var(--morning);color:#fff}.shift-circle.afternoon{background:var(--afternoon);color:#fff}.shift-circle.free{background:var(--free);color:#fff}.today-status{font-size:25px;font-weight:850;letter-spacing:.3px}.today-status.morning{color:var(--morning)}.today-status.afternoon{color:var(--afternoon)}.today-status.free{color:var(--free)}.today-message{margin-top:8px;padding:9px;border-radius:10px;background:#e9f8ef;color:#25834d;font-size:12px;font-weight:650}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.quick-card{border:1px solid var(--line);border-radius:14px;padding:13px 11px;min-height:92px}.quick-label{font-size:11px;font-weight:750}.quick-value{font-size:13px;margin-top:6px;font-weight:700}.quick-muted{font-size:11px;color:var(--muted);margin-top:3px}.quick-free{color:var(--free)}.quick-afternoon{color:var(--afternoon)}.quick-morning{color:var(--morning)}
+.primary-cta{width:100%;border:0;border-radius:13px;background:var(--free);color:#fff;padding:13px 15px;margin-top:12px;font-size:14px;font-weight:800;cursor:pointer}
+header.calendar-header{display:flex;align-items:center;justify-content:space-between;gap:10px}.nav,.action{border:1px solid var(--line);background:#fff;border-radius:12px;min-width:42px;height:42px;cursor:pointer}.nav{font-size:23px}.title{text-align:center;flex:1;min-width:0}h2{font-size:21px;margin:0;font-weight:750}.weekdays,.grid{display:grid;grid-template-columns:repeat(7,1fr)}.weekdays{margin-top:14px}.wd{text-align:center;font-size:12px;font-weight:750;color:#666;padding:8px 0}.wd.weekend{color:var(--weekend)}
+.day{height:62px;display:flex;align-items:center;justify-content:center}.num{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;border:2px solid transparent}.weekend .num{color:var(--weekend)}.shift1 .num{color:var(--morning)}.shift2 .num{color:var(--afternoon)}.free .num{border:3px solid var(--free);color:var(--free);font-weight:850}.free.weekend .num{border-color:var(--free);color:var(--weekend)}.empty{height:62px}
+.legend{border-top:1px solid var(--line);margin-top:8px;padding-top:14px;display:flex;justify-content:center;flex-wrap:wrap;gap:10px 18px;font-size:12px;color:#666}.legend-item{display:flex;align-items:center;gap:6px}.swatch{width:12px;height:12px;border-radius:50%;display:inline-block}.morning{background:var(--morning)}.afternoon{background:var(--afternoon)}.free-s{border:2px solid var(--free);width:14px;height:14px}
+.toolbar{display:flex;gap:8px;margin-top:14px}.action{flex:1;font-size:13px;font-weight:650;padding:0 10px}.action.primary{background:#f3f7ff;border-color:#d9e6ff}.notice{margin-top:10px;padding:10px 12px;border-radius:12px;background:#fafafa;font-size:12px;color:#666;line-height:1.4}.notice strong{color:var(--text)}.file{display:none}.settings{margin-top:12px;border-top:1px solid var(--line);padding-top:12px;display:none}.settings.open{display:block}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.toggle{accent-color:var(--free)}select{font-size:16px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff}.status{margin-top:8px;font-size:12px;color:var(--muted)}
+.bottom-nav{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);width:min(540px,calc(100% - 24px));background:rgba(255,255,255,.97);border:1px solid var(--line);box-shadow:0 7px 24px rgba(0,0,0,.12);border-radius:18px;padding:7px 8px;display:grid;grid-template-columns:1fr 1fr;gap:5px;z-index:10}.tab{border:0;background:transparent;border-radius:12px;padding:8px 5px;color:#777;font-size:11px;font-weight:700;cursor:pointer}.tab-icon{display:block;font-size:19px;line-height:20px;margin-bottom:2px}.tab.active{background:#eaf8f0;color:var(--free)}
+@media(max-width:390px){.card{padding:13px}.day,.empty{height:56px}.num{width:36px;height:36px;font-size:14px}.action{font-size:12px}.today-status{font-size:23px}}
 </style>
 </head>
 <body>
 <main class="app">
 <section class="card">
-<header>
+<header class="app-header">
+<div class="app-icon">✓</div>
+<div class="app-title"><h1>Mis Turnos</h1><div class="sub">Charles Paredes</div></div>
+<button class="settings-btn" type="button" aria-label="Ajustes">⚙</button>
+</header>
+
+<section id="homeView" class="view active">
+<div class="today-card">
+<div class="eyebrow">HOY</div>
+<div id="todayDate" class="today-date"></div>
+<div id="todayCircle" class="shift-circle free">🛏</div>
+<div id="todayStatus" class="today-status free">LIBRE</div>
+<div id="todayMessage" class="today-message">¡A disfrutar tu día!</div>
+</div>
+<div class="quick-grid">
+<div class="quick-card"><div class="quick-label">Próximo turno</div><div id="nextShiftDate" class="quick-value"></div><div id="nextShiftType" class="quick-muted"></div></div>
+<div class="quick-card"><div class="quick-label">Próximo día libre</div><div id="nextFreeDate" class="quick-value quick-free"></div><div id="nextFreeCountdown" class="quick-muted"></div></div>
+</div>
+<button id="goCalendar" class="primary-cta" type="button">Ver calendario completo →</button>
+</section>
+
+<section id="calendarView" class="view">
+<header class="calendar-header">
 <button class="nav" id="prev" type="button" aria-label="Mes anterior">‹</button>
-<div class="title"><h1 id="month">Septiembre 2026</h1><div class="sub">Turnos de Charles Paredes</div></div>
+<div class="title"><h2 id="month">Septiembre 2026</h2><div class="sub">Turnos de Charles Paredes</div></div>
 <button class="nav" id="next" type="button" aria-label="Mes siguiente">›</button>
 </header>
 <div class="weekdays"><div class="wd">Lun</div><div class="wd">Mar</div><div class="wd">Mié</div><div class="wd">Jue</div><div class="wd">Vie</div><div class="wd weekend">Sáb</div><div class="wd weekend">Dom</div></div>
@@ -40,76 +65,66 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}.n
 </div>
 <div class="notice"><strong>Importar turnos:</strong> carga el Excel de cada mes. La app busca automáticamente “CHARLES PAREDES” y reconoce <b>1</b> = mañana, <b>2</b> = tarde y <b>L</b> = libre.</div>
 </section>
+</section>
 </main>
+
+<nav class="bottom-nav" aria-label="Navegación principal">
+<button class="tab active" id="tabHome" type="button"><span class="tab-icon">⌂</span>Inicio</button>
+<button class="tab" id="tabCalendar" type="button"><span class="tab-icon">▣</span>Calendario</button>
+</nav>
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 const defaultSchedule={"2026-09":{"1":1,"2":1,"3":"L","4":1,"5":1,"6":1,"7":"L","8":2,"9":2,"10":2,"11":2,"12":2,"13":"L","14":1,"15":1,"16":1,"17":1,"18":1,"19":"L","20":1,"21":2,"22":2,"23":"L","24":2,"25":2,"26":2,"27":"L","28":1,"29":1,"30":1}};
-let schedules=defaultSchedule, current=new Date(2026,8,1);
-const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-
+let schedules=defaultSchedule,current=new Date(2026,8,1);
+const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],daysShort=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 function key(y,m){return y+"-"+String(m+1).padStart(2,"0")}
-function render(){
- const y=current.getFullYear(),m=current.getMonth(),k=key(y,m);
- document.getElementById("month").textContent=months[m]+" "+y;
- const grid=document.getElementById("grid");grid.innerHTML="";
- const start=(new Date(y,m,1).getDay()+6)%7,days=new Date(y,m+1,0).getDate(),sch=schedules[k]||{};
- for(let i=0;i<start;i++){let e=document.createElement("div");e.className="empty";grid.appendChild(e)}
- for(let d=1;d<=days;d++){
-  const dt=new Date(y,m,d),dow=(dt.getDay()+6)%7,v=sch[d];
-  let cls="day"+(dow>=5?" weekend":"");if(v===1)cls+=" shift1";if(v===2)cls+=" shift2";if(v==="L")cls+=" free";
-  let e=document.createElement("div");e.className=cls;e.innerHTML='<div class="num">'+d+"</div>";grid.appendChild(e);
- }
+function shiftLabel(v){return v===1?"Mañana":v===2?"Tarde":"Libre"}
+function shiftClass(v){return v===1?"morning":v===2?"afternoon":"free"}
+function shiftIcon(v){return v===1?"☀":v===2?"☀":"🛏"}
+function formatDate(dt){return daysShort[dt.getDay()]+" "+dt.getDate()+" de "+months[dt.getMonth()]}
+function allDaysFromToday(){
+ const out=[],now=new Date();now.setHours(0,0,0,0);
+ for(let i=0;i<370;i++){const dt=new Date(now);dt.setDate(now.getDate()+i);const sch=schedules[key(dt.getFullYear(),dt.getMonth())]||{};const v=sch[dt.getDate()];if(v!==undefined)out.push({dt,v})}return out;
 }
+function renderHome(){
+ const now=new Date();now.setHours(0,0,0,0);const sch=schedules[key(now.getFullYear(),now.getMonth())]||{};const today=sch[now.getDate()];
+ const circle=document.getElementById("todayCircle"),status=document.getElementById("todayStatus");
+ document.getElementById("todayDate").textContent=formatDate(now);
+ circle.className="shift-circle "+shiftClass(today);circle.textContent=shiftIcon(today);
+ status.className="today-status "+shiftClass(today);status.textContent=shiftLabel(today).toUpperCase();
+ document.getElementById("todayMessage").textContent=today===undefined?"Sin turno cargado para hoy":today===1?"¡Buen turno!":today===2?"¡Buen turno!":"¡A disfrutar tu día!";
+ const future=allDaysFromToday().filter(x=>x.dt.getTime()>now.getTime());
+ const ns=future.find(x=>x.v===1||x.v===2),nf=future.find(x=>x.v==="L");
+ document.getElementById("nextShiftDate").textContent=ns?formatDate(ns.dt):"Sin datos";
+ const nst=document.getElementById("nextShiftType");nst.textContent=ns?shiftLabel(ns.v):"";nst.className="quick-muted "+(ns?"quick-"+shiftClass(ns.v):"");
+ document.getElementById("nextFreeDate").textContent=nf?formatDate(nf.dt):"Sin datos";
+ document.getElementById("nextFreeCountdown").textContent=nf?((nf.dt-now)/86400000===1?"En 1 día":"En "+Math.round((nf.dt-now)/86400000)+" días"):"";
+}
+function renderCalendar(){
+ const y=current.getFullYear(),m=current.getMonth(),k=key(y,m);document.getElementById("month").textContent=months[m]+" "+y;
+ const grid=document.getElementById("grid");grid.innerHTML="";const start=(new Date(y,m,1).getDay()+6)%7,days=new Date(y,m+1,0).getDate(),sch=schedules[k]||{};
+ for(let i=0;i<start;i++){let e=document.createElement("div");e.className="empty";grid.appendChild(e)}
+ for(let d=1;d<=days;d++){const dt=new Date(y,m,d),dow=(dt.getDay()+6)%7,v=sch[d];let cls="day"+(dow>=5?" weekend":"");if(v===1)cls+=" shift1";if(v===2)cls+=" shift2";if(v==="L")cls+=" free";let e=document.createElement("div");e.className=cls;e.innerHTML='<div class="num">'+d+"</div>";grid.appendChild(e)}
+}
+function showView(name){const home=name==="home",calendar=!home;document.getElementById("homeView").classList.toggle("active",home);document.getElementById("calendarView").classList.toggle("active",calendar);document.getElementById("tabHome").classList.toggle("active",home);document.getElementById("tabCalendar").classList.toggle("active",calendar);if(home)renderHome();else renderCalendar();window.scrollTo({top:0,behavior:"smooth"})}
 function populateHours(){const s=document.getElementById("hour");for(let h=0;h<24;h++){let o=document.createElement("option");o.value=h;o.textContent=String(h).padStart(2,"0")+":00";s.appendChild(o)}s.value=20}
 function save(){try{localStorage.setItem("turnosSchedules",JSON.stringify(schedules));localStorage.setItem("turnosReminder",JSON.stringify({enabled:document.getElementById("enabled").checked,hour:+document.getElementById("hour").value}))}catch(e){}}
 function loadSaved(){try{let a=localStorage.getItem("turnosSchedules"),b=localStorage.getItem("turnosReminder");if(a)schedules=JSON.parse(a);if(b){let x=JSON.parse(b);document.getElementById("enabled").checked=!!x.enabled;document.getElementById("hour").value=x.hour??20}}catch(e){}}
 async function importExcel(file){
  if(!window.XLSX){alert("La biblioteca para leer Excel no está disponible. Conéctate a internet y vuelve a intentarlo.");return}
- const data=await file.arrayBuffer(),book=XLSX.read(data,{cellDates:true});
- let found=null;
- for(const name of book.SheetNames){
-  const ws=book.Sheets[name], rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
-  for(let r=0;r<rows.length;r++){
-   for(let c=0;c<rows[r].length;c++){
-    if(String(rows[r][c]??"").trim().toUpperCase()==="CHARLES PAREDES"){found={rows,r,c};break}
-   }
-   if(found)break;
-  } if(found)break;
- }
+ const data=await file.arrayBuffer(),book=XLSX.read(data,{cellDates:true});let found=null;
+ for(const name of book.SheetNames){const ws=book.Sheets[name],rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});for(let r=0;r<rows.length;r++){for(let c=0;c<rows[r].length;c++){if(String(rows[r][c]??"").trim().toUpperCase()==="CHARLES PAREDES"){found={rows,r,c};break}}if(found)break}if(found)break}
  if(!found){alert("No encontré CHARLES PAREDES en este Excel.");return}
- const {rows,r,c}=found;
- // Find a row containing day numbers 1..30/31 near Charles' row, usually above it.
- let dayRow=-1;
- for(let rr=Math.max(0,r-5);rr<r;rr++){
-  const count=rows[rr].filter(v=>typeof v==="number"&&v>=1&&v<=31).length;
-  if(count>=7){dayRow=rr;break}
- }
+ const {rows,r}=found;let dayRow=-1;for(let rr=Math.max(0,r-5);rr<r;rr++){const count=rows[rr].filter(v=>typeof v==="number"&&v>=1&&v<=31).length;if(count>=7){dayRow=rr;break}}
  if(dayRow<0){alert("Encontré a Charles, pero no pude identificar la fila de fechas.");return}
- let y=2026,m=8;
- // Prefer a title containing a month/year.
- const text=rows.flat().filter(Boolean).join(" ").toUpperCase();
- const mm=["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
- for(let i=0;i<12;i++)if(text.includes(mm[i])){m=i;break}
- const ym=text.match(/20\d{2}/);if(ym)y=+ym[0];
- const sch={};
- for(let col=0;col<rows[r].length;col++){
-  const d=rows[dayRow][col]; if(!(typeof d==="number"&&d>=1&&d<=31))continue;
-  const v=rows[r][col];
-  if(v==="L"||String(v).trim().toUpperCase()==="L")sch[d]="L";
-  else if(Number(v)===1)sch[d]=1;
-  else if(Number(v)===2)sch[d]=2;
- }
- schedules[key(y,m)]=sch;current=new Date(y,m,1);save();render();
- alert("Turnos importados correctamente para "+mm[m]+" "+y+".");
+ let y=2026,m=8,text=rows.flat().filter(Boolean).join(" ").toUpperCase();const mm=["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];for(let i=0;i<12;i++)if(text.includes(mm[i])){m=i;break}const ym=text.match(/20\d{2}/);if(ym)y=+ym[0];const sch={};
+ for(let col=0;col<rows[r].length;col++){const d=rows[dayRow][col];if(!(typeof d==="number"&&d>=1&&d<=31))continue;const v=rows[r][col];if(v==="L"||String(v).trim().toUpperCase()==="L")sch[d]="L";else if(Number(v)===1)sch[d]=1;else if(Number(v)===2)sch[d]=2}
+ schedules[key(y,m)]=sch;current=new Date(y,m,1);save();renderHome();renderCalendar();showView("calendar");alert("Turnos importados correctamente para "+mm[m]+" "+y+".");
 }
-document.getElementById("prev").onclick=()=>{current.setMonth(current.getMonth()-1);render()};
-document.getElementById("next").onclick=()=>{current.setMonth(current.getMonth()+1);render()};
-document.getElementById("load").onclick=()=>document.getElementById("file").click();
-document.getElementById("file").onchange=e=>{if(e.target.files[0])importExcel(e.target.files[0]);e.target.value=""};
-document.getElementById("reminders").onclick=()=>document.getElementById("settings").classList.toggle("open");
-document.getElementById("enabled").onchange=save;document.getElementById("hour").onchange=save;
-populateHours();loadSaved();render();
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+document.getElementById("tabHome").onclick=()=>showView("home");document.getElementById("tabCalendar").onclick=()=>showView("calendar");document.getElementById("goCalendar").onclick=()=>showView("calendar");
+document.getElementById("prev").onclick=()=>{current.setMonth(current.getMonth()-1);renderCalendar()};document.getElementById("next").onclick=()=>{current.setMonth(current.getMonth()+1);renderCalendar()};document.getElementById("load").onclick=()=>document.getElementById("file").click();document.getElementById("file").onchange=e=>{if(e.target.files[0])importExcel(e.target.files[0]);e.target.value=""};document.getElementById("reminders").onclick=()=>document.getElementById("settings").classList.toggle("open");document.getElementById("enabled").onchange=save;document.getElementById("hour").onchange=save;
+populateHours();loadSaved();renderHome();renderCalendar();if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
 </html>
