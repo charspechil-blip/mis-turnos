@@ -76,75 +76,26 @@ body{
 }
 
 .quick-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:12px;
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;
 }
 .quick-card{
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:14px 12px 12px;
-  min-height:132px;
-  text-align:center;
-  background:#fff;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  border:1px solid var(--line);border-radius:16px;padding:14px 12px 12px;
+  min-height:132px;text-align:center;background:#fff;
 }
-.quick-label{
-  width:100%;
-  min-height:34px;
-  display:flex;
-  align-items:flex-start;
-  justify-content:flex-start;
-  text-align:left;
-  font-size:12px;
-  line-height:1.15;
-  font-weight:800;
-}
-.quick-value{
-  width:100%;
-  min-height:34px;
-  margin-top:5px;
-  display:flex;
-  align-items:flex-start;
-  justify-content:center;
-  text-align:center;
-  font-size:13px;
-  line-height:1.15;
-  font-weight:650;
-  color:var(--text);
-}
+.quick-label{font-size:12px;font-weight:800;text-align:left}
+.quick-value{font-size:13px;margin-top:5px;font-weight:650;color:var(--text)}
 .quick-icon{
-  width:72px;
-  height:52px;
-  margin-top:7px;
-  display:grid;
-  place-items:center;
-  font-size:38px;
-  line-height:1;
-  flex:none;
+  height:42px;margin-top:7px;display:grid;place-items:center;
+  font-size:38px;line-height:1;
 }
-.quick-type,
-.quick-countdown{
-  width:100%;
-  min-height:29px;
-  margin-top:4px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  font-size:16px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:.3px;
+.quick-type{
+  margin-top:4px;font-size:16px;font-weight:900;letter-spacing:.3px;
 }
-.quick-countdown{color:var(--muted)}
 .quick-free{color:var(--free)}
 .quick-afternoon{color:var(--afternoon)}
 .quick-morning{color:var(--morning)}
 .quick-card.free-card .quick-value{color:var(--free);font-weight:800}
+.quick-countdown{font-size:11px;color:var(--muted);margin-top:2px}
 .primary-cta{
   width:100%;border:0;border-radius:13px;background:var(--free);color:#fff;
   padding:13px 15px;margin-top:12px;font-size:14px;font-weight:800;cursor:pointer;
@@ -242,8 +193,8 @@ select{
 .today-message{margin-top:20px;padding:13px 12px;border-radius:13px;font-size:20px;line-height:1.1}
 .quick-grid{gap:16px;margin-top:18px}
 .quick-card{min-height:275px;border-radius:23px;padding:20px 14px 16px}
-.quick-label{font-size:20px;line-height:1.1}
-.quick-value{font-size:24px;line-height:1.1;margin-top:13px}
+.quick-label{font-size:20px;line-height:1.1;min-height:44px;display:flex;align-items:flex-start}
+.quick-value{font-size:24px;line-height:1.1;margin-top:13px;min-height:53px;display:flex;align-items:flex-start;justify-content:center}
 .quick-icon{width:86px;height:86px;margin:12px auto 7px;font-size:54px}
 .quick-type{margin-top:auto;font-size:28px;line-height:1}
 .quick-countdown{margin-top:9px;font-size:20px;line-height:1}
@@ -258,18 +209,19 @@ select{
  .app-title h1{font-size:26px}
  .app-title .sub{font-size:17px;margin-top:4px}
  .settings-btn{width:54px;height:54px;border-radius:18px}
- .today-card{padding:14px 12px;border-radius:20px}
- .eyebrow{font-size:20px}
- .today-date{font-size:17px}
- .shift-circle{width:124px;height:124px;margin-top:12px;margin-bottom:8px}
- .today-status{font-size:32px}
- .today-message{font-size:15px;margin-top:11px;padding:8px 10px}
+ .today-card{padding:21px 14px;border-radius:22px}
+ .eyebrow{font-size:23px}
+ .today-date{font-size:21px}
+ .shift-circle{width:150px;height:150px;margin-top:20px}
+ .today-status{font-size:39px}
+ .today-message{font-size:17px;margin-top:17px}
  .quick-grid{gap:10px;margin-top:16px}
  .quick-card{min-height:230px;padding:17px 10px 14px;border-radius:20px}
- .quick-label{min-height:42px;font-size:17px;line-height:1.1}
- .quick-value{min-height:50px;font-size:21px;line-height:1.1;margin-top:11px}
- .quick-icon{width:72px;height:72px;margin-top:7px}
- .quick-type,.quick-countdown{min-height:31px;font-size:25px;line-height:1}
+ .quick-label{font-size:17px;min-height:37px}
+ .quick-value{font-size:21px;margin-top:11px;min-height:46px}
+ .quick-icon{width:72px;height:72px}
+ .quick-type{font-size:25px}
+ .quick-countdown{font-size:17px}
  .primary-cta{font-size:19px;padding:16px}
  .tab{font-size:12px;min-height:69px}
 }
@@ -277,10 +229,11 @@ select{
  .app-title h1{font-size:23px}
  .app-title .sub{font-size:15px}
  .today-date{font-size:18px}
- .today-status{font-size:30px}
- .quick-label{font-size:15px;min-height:36px}
- .quick-value{font-size:18px;min-height:43px}
- .quick-type,.quick-countdown{font-size:22px}
+ .today-status{font-size:34px}
+ .quick-label{font-size:15px;min-height:33px}
+ .quick-value{font-size:18px;min-height:40px}
+ .quick-type{font-size:22px}
+ .quick-countdown{font-size:15px}
  .tab{font-size:10px}
 }
 </style>
@@ -323,9 +276,6 @@ select{
     </div>
   </div>
 
-  <button id="goCalendar" class="primary-cta" type="button">
-    Ver calendario completo →
-  </button>
 </section>
 
 <section id="calendarView" class="view">
@@ -599,41 +549,4 @@ async function importExcel(file){
 }
 
 document.getElementById("tabHome").onclick=()=>showView("home");
-document.getElementById("tabCalendar").onclick=()=>showView("calendar");
-document.getElementById("goCalendar").onclick=()=>showView("calendar");
-
-document.getElementById("tabStats").onclick=()=>{
- alert("Estadísticas: las activaremos en el siguiente paso.");
-};
-document.getElementById("tabReminders").onclick=()=>{
- showView("calendar");
- document.getElementById("settings").classList.add("open");
-};
-
-document.getElementById("prev").onclick=()=>{
- current.setMonth(current.getMonth()-1);renderCalendar()
-};
-document.getElementById("next").onclick=()=>{
- current.setMonth(current.getMonth()+1);renderCalendar()
-};
-document.getElementById("load").onclick=()=>document.getElementById("file").click();
-document.getElementById("file").onchange=e=>{
- if(e.target.files[0])importExcel(e.target.files[0]);
- e.target.value=""
-};
-document.getElementById("reminders").onclick=()=>{
- document.getElementById("settings").classList.toggle("open")
-};
-document.getElementById("enabled").onchange=save;
-document.getElementById("hour").onchange=save;
-
-populateHours();
-loadSaved();
-renderHome();
-renderCalendar();
-
-if("serviceWorker" in navigator)
- navigator.serviceWorker.register("sw.js").catch(()=>{});
-</script>
-</body>
-</html>
+document.getEl
