@@ -483,3 +483,631 @@ select{
     </div>
 
   </div>
+  </section>
+
+<section id="calendarView" class="view">
+
+  <header class="calendar-header">
+    <button class="nav" id="prev" type="button" aria-label="Mes anterior">‹</button>
+    <div class="title">
+      <h2 id="month">Septiembre 2026</h2>
+      <div class="sub">Turnos de Charles Paredes</div>
+    </div>
+    <button class="nav" id="next" type="button" aria-label="Mes siguiente">›</button>
+  </header>
+
+  <div class="weekdays">
+    <div class="wd">Lun</div><div class="wd">Mar</div><div class="wd">Mié</div>
+    <div class="wd">Jue</div><div class="wd">Vie</div>
+    <div class="wd weekend">Sáb</div><div class="wd weekend">Dom</div>
+  </div>
+
+  <div id="grid" class="grid" aria-live="polite"></div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="swatch morning"></span>Mañana</div>
+    <div class="legend-item"><span class="swatch afternoon"></span>Tarde</div>
+    <div class="legend-item"><span class="swatch free-s"></span>Libre</div>
+  </div>
+
+  <div class="toolbar">
+    <button class="action primary" id="load" type="button">📄 Cargar Excel</button>
+    <button class="action" id="reminders" type="button">🔔 Recordatorios</button>
+  </div>
+
+  <input id="file" class="file" type="file" accept=".xlsx,.xls,.xlsm">
+
+  <div id="settings" class="settings">
+    <div class="row">
+      <label for="enabled"><strong>Recordatorio del día anterior</strong></label>
+      <input id="enabled" class="toggle" type="checkbox">
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <label for="hour">Hora del aviso</label>
+      <select id="hour"></select>
+    </div>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="notice">
+    <strong>Importar turnos:</strong> carga el Excel de cada mes.
+    La app busca automáticamente “CHARLES PAREDES” y reconoce
+    <b>1</b> = mañana, <b>2</b> = tarde y <b>L</b> = libre.
+  </div>
+
+</section>
+
+</section>
+</main>
+
+<nav class="bottom-nav" aria-label="Navegación principal">
+
+  <button class="tab active" id="tabHome" type="button">
+    <span class="tab-icon">
+      <svg viewBox="0 0 64 64" fill="none">
+        <path d="M10 29 32 11l22 18v24H10z"
+              stroke="currentColor"
+              stroke-width="5"
+              stroke-linejoin="round"/>
+        <path d="M23 53V38h18v15"
+              stroke="currentColor"
+              stroke-width="5"
+              stroke-linejoin="round"/>
+      </svg>
+    </span>
+    Inicio
+  </button>
+
+  <button class="tab" id="tabCalendar" type="button">
+    <span class="tab-icon">
+      <svg viewBox="0 0 64 64" fill="none">
+        <rect x="10" y="13" width="44" height="42" rx="6"
+              stroke="currentColor"
+              stroke-width="4"/>
+        <path d="M10 25h44M20 7v12M44 7v12"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"/>
+        <path d="M21 35h5M31 35h5M41 35h4M21 44h5M31 44h5"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"/>
+      </svg>
+    </span>
+    Calendario
+  </button>
+
+  <button class="tab" id="tabStats" type="button">
+    <span class="tab-icon">
+      <svg viewBox="0 0 64 64" fill="none">
+        <path d="M10 54h44"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"/>
+        <rect x="13" y="35" width="8" height="19" rx="2"
+              stroke="currentColor"
+              stroke-width="4"/>
+        <rect x="28" y="24" width="8" height="30" rx="2"
+              stroke="currentColor"
+              stroke-width="4"/>
+        <rect x="43" y="12" width="8" height="42" rx="2"
+              stroke="currentColor"
+              stroke-width="4"/>
+      </svg>
+    </span>
+    Estadísticas
+  </button>
+
+  <button class="tab" id="tabReminders" type="button">
+    <span class="tab-icon">
+      <svg viewBox="0 0 64 64" fill="none">
+        <path d="M18 46h28l-3-5V28c0-8-5-13-11-13S21 20 21 28v13z"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linejoin="round"/>
+        <path d="M26 51c1 4 4 6 6 6s5-2 6-6M32 9v4"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"/>
+      </svg>
+    </span>
+    Recordatorios
+  </button>
+
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<script>
+/* =========================
+   DATOS Y FUNCIONES
+   ========================= */
+
+const defaultSchedule={
+  "2026-09":{
+    "1":1,"2":1,"3":"L","4":1,"5":1,"6":1,"7":"L",
+    "8":2,"9":2,"10":2,"11":2,"12":2,"13":"L",
+    "14":1,"15":1,"16":1,"17":1,"18":1,"19":"L",
+    "20":1,"21":2,"22":2,"23":"L","24":2,"25":2,"26":2,"27":"L",
+    "28":1,"29":1,"30":1
+  }
+};
+
+let schedules=defaultSchedule;
+let current=new Date(2026,8,1);
+
+const months=[
+  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
+];
+
+const daysShort=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+
+function key(y,m){
+  return y+"-"+String(m+1).padStart(2,"0");
+}
+
+function shiftLabel(v){
+  return v===1 ? "Mañana" : v===2 ? "Tarde" : "Libre";
+}
+
+function shiftClass(v){
+  return v===1 ? "morning" : v===2 ? "afternoon" : "free";
+}
+
+function sunSvg(){
+  return `<svg viewBox="0 0 120 120" fill="none">
+    <circle cx="60" cy="60" r="23" fill="#ffbe22"/>
+    <circle cx="53" cy="52" r="5" fill="#ffd95a"/>
+    <path d="M60 10v16M60 94v16M10 60h16M94 60h16
+             M24.6 24.6l11.3 11.3M84.1 84.1l11.3 11.3
+             M95.4 24.6 84.1 35.9M35.9 84.1 24.6 95.4"
+          stroke="#f4a51c"
+          stroke-width="6"
+          stroke-linecap="round"/>
+  </svg>`;
+}
+
+function moonSvg(){
+  return `<svg viewBox="0 0 120 120" fill="none">
+    <path d="M78 13c-20 9-31 27-31 48 0 22 14 39 35 46
+             -6 2-12 3-18 3-28 0-51-22-51-50S36 10 64 10
+             c5 0 10 1 14 3z"
+          fill="#ffd331"/>
+    <path d="M86 20c-7 4-13 9-17 16"
+          stroke="#ffe06b"
+          stroke-width="4"
+          stroke-linecap="round"/>
+  </svg>`;
+}
+
+function sofaSvg(){
+  return `<svg viewBox="0 0 120 100" fill="none">
+    <path d="M20 58h80v20H20z" fill="#238bd0"/>
+    <path d="M28 48c0-8 7-14 15-14h34c8 0 15 6 15 14v10H28z"
+          fill="#2ba2df"/>
+    <path d="M18 61v18M102 61v18M27 78v10M93 78v10"
+          stroke="#2374a8"
+          stroke-width="6"
+          stroke-linecap="round"/>
+    <path d="M91 10h4v25h-4z" fill="#d99b2b"/>
+    <path d="M78 10c0-7 6-10 15-10s15 3 15 10v4H78z"
+          fill="#ffd22e"/>
+    <path d="M80 14h26"
+          stroke="#f0a900"
+          stroke-width="3"/>
+  </svg>`;
+}
+
+function formatDate(dt){
+  return daysShort[dt.getDay()]+" "+dt.getDate()+" de "+months[dt.getMonth()];
+}
+
+function allDaysFromToday(){
+  const out=[],now=new Date();
+
+  now.setHours(0,0,0,0);
+
+  for(let i=0;i<370;i++){
+    const dt=new Date(now);
+    dt.setDate(now.getDate()+i);
+
+    const sch=schedules[key(dt.getFullYear(),dt.getMonth())]||{};
+    const v=sch[dt.getDate()];
+
+    if(v!==undefined) out.push({dt,v});
+  }
+
+  return out;
+}
+
+/* =========================
+   PANTALLA INICIAL
+   ========================= */
+
+function renderHome(){
+  const now=new Date();
+
+  now.setHours(0,0,0,0);
+
+  const sch=schedules[key(now.getFullYear(),now.getMonth())]||{};
+  const today=sch[now.getDate()];
+
+  const circle=document.getElementById("todayCircle");
+  const status=document.getElementById("todayStatus");
+
+  document.getElementById("todayDate").textContent=formatDate(now);
+
+  circle.className="shift-circle "+shiftClass(today);
+
+  if(today===1){
+    circle.innerHTML=sunSvg();
+  }else if(today===2){
+    circle.innerHTML=sunSvg();
+  }else{
+    circle.innerHTML=sofaSvg();
+  }
+
+  status.className="today-status "+shiftClass(today);
+  status.textContent=shiftLabel(today).toUpperCase();
+
+  document.getElementById("todayMessage").textContent=
+    today===undefined ? "Sin turno cargado para hoy" :
+    today===1 ? "¡Buen turno!" :
+    today===2 ? "¡Buen turno!" :
+    "¡A disfrutar tu día!";
+
+  const future=allDaysFromToday().filter(
+    x=>x.dt.getTime()>now.getTime()
+  );
+
+  const ns=future.find(x=>x.v===1||x.v===2);
+  const nf=future.find(x=>x.v==="L");
+
+  document.getElementById("nextShiftDate").textContent=
+    ns ? formatDate(ns.dt) : "Sin datos";
+
+  document.getElementById("nextShiftIcon").innerHTML=
+    ns ? (ns.v===1 ? sunSvg() : moonSvg()) : "";
+
+  const type=document.getElementById("nextShiftType");
+
+  type.textContent=ns ? shiftLabel(ns.v) : "";
+  type.className="quick-type "+(ns ? shiftClass(ns.v) : "");
+
+  document.getElementById("nextFreeDate").textContent=
+    nf ? formatDate(nf.dt) : "Sin datos";
+
+  const days=nf ? Math.round((nf.dt-now)/86400000) : null;
+
+  document.getElementById("nextFreeCountdown").textContent=
+    nf ? (days===1 ? "En 1 día" : "En "+days+" días") : "";
+}
+/* =========================
+   CALENDARIO
+   ========================= */
+
+function renderCalendar(){
+  const y=current.getFullYear();
+  const m=current.getMonth();
+  const k=key(y,m);
+
+  document.getElementById("month").textContent=months[m]+" "+y;
+
+  const grid=document.getElementById("grid");
+  grid.innerHTML="";
+
+  const start=(new Date(y,m,1).getDay()+6)%7;
+  const days=new Date(y,m+1,0).getDate();
+  const sch=schedules[k]||{};
+
+  for(let i=0;i<start;i++){
+    const e=document.createElement("div");
+    e.className="empty";
+    grid.appendChild(e);
+  }
+
+  for(let d=1;d<=days;d++){
+    const dt=new Date(y,m,d);
+    const dow=(dt.getDay()+6)%7;
+    const v=sch[d];
+
+    let cls="day"+(dow>=5 ? " weekend":"");
+
+    if(v===1) cls+=" shift1";
+    if(v===2) cls+=" shift2";
+    if(v==="L") cls+=" free";
+
+    const e=document.createElement("div");
+    e.className=cls;
+    e.innerHTML='<div class="num">'+d+"</div>";
+
+    grid.appendChild(e);
+  }
+}
+
+/* =========================
+   NAVEGACIÓN
+   ========================= */
+
+function showView(name){
+  const home=name==="home";
+  const calendar=!home;
+
+  document.getElementById("homeView").classList.toggle("active",home);
+  document.getElementById("calendarView").classList.toggle("active",calendar);
+
+  document.getElementById("tabHome").classList.toggle("active",home);
+  document.getElementById("tabCalendar").classList.toggle("active",calendar);
+
+  if(home) renderHome();
+  else renderCalendar();
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.getElementById("tabHome").onclick=()=>{
+  showView("home");
+};
+
+document.getElementById("tabCalendar").onclick=()=>{
+  showView("calendar");
+};
+
+/* =========================
+   ESTADÍSTICAS
+   ========================= */
+
+document.getElementById("tabStats").onclick=()=>{
+  alert("La sección Estadísticas se incorporará en el siguiente paso.");
+};
+
+/* =========================
+   RECORDATORIOS
+   ========================= */
+
+document.getElementById("tabReminders").onclick=()=>{
+  showView("calendar");
+
+  document.getElementById("settings").classList.add("open");
+
+  window.setTimeout(()=>{
+    document.getElementById("settings").scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+  },80);
+};
+
+document.getElementById("prev").onclick=()=>{
+  current.setMonth(current.getMonth()-1);
+  renderCalendar();
+};
+
+document.getElementById("next").onclick=()=>{
+  current.setMonth(current.getMonth()+1);
+  renderCalendar();
+};
+
+/* =========================
+   AJUSTES / RECORDATORIOS
+   ========================= */
+
+function populateHours(){
+  const s=document.getElementById("hour");
+
+  for(let h=0;h<24;h++){
+    const o=document.createElement("option");
+
+    o.value=h;
+    o.textContent=String(h).padStart(2,"0")+":00";
+
+    s.appendChild(o);
+  }
+
+  s.value=20;
+}
+
+function save(){
+  try{
+    localStorage.setItem(
+      "turnosSchedules",
+      JSON.stringify(schedules)
+    );
+
+    localStorage.setItem(
+      "turnosReminder",
+      JSON.stringify({
+        enabled:document.getElementById("enabled").checked,
+        hour:+document.getElementById("hour").value
+      })
+    );
+  }catch(e){}
+}
+
+function loadSaved(){
+  try{
+    const a=localStorage.getItem("turnosSchedules");
+    const b=localStorage.getItem("turnosReminder");
+
+    if(a){
+      schedules=JSON.parse(a);
+    }
+
+    if(b){
+      const x=JSON.parse(b);
+
+      document.getElementById("enabled").checked=!!x.enabled;
+      document.getElementById("hour").value=x.hour??20;
+    }
+  }catch(e){}
+}
+
+document.getElementById("settingsBtn").onclick=()=>{
+  showView("calendar");
+  document.getElementById("settings").classList.add("open");
+};
+
+document.getElementById("reminders").onclick=()=>{
+  document.getElementById("settings").classList.toggle("open");
+};
+
+document.getElementById("enabled").onchange=save;
+document.getElementById("hour").onchange=save;
+
+/* =========================
+   IMPORTACIÓN DE EXCEL
+   ========================= */
+
+async function importExcel(file){
+
+  if(!window.XLSX){
+    alert(
+      "La biblioteca para leer Excel no está disponible. " +
+      "Conéctate a internet y vuelve a intentarlo."
+    );
+    return;
+  }
+
+  const data=await file.arrayBuffer();
+
+  const book=XLSX.read(data,{
+    cellDates:true
+  });
+
+  let found=null;
+
+  for(const name of book.SheetNames){
+
+    const ws=book.Sheets[name];
+
+    const rows=XLSX.utils.sheet_to_json(ws,{
+      header:1,
+      raw:true,
+      defval:null
+    });
+
+    for(let r=0;r<rows.length;r++){
+
+      for(let c=0;c<rows[r].length;c++){
+
+        if(
+          String(rows[r][c]??"")
+          .trim()
+          .toUpperCase()==="CHARLES PAREDES"
+        ){
+          found={
+            rows,
+            r,
+            c
+          };
+          break;
+        }
+      }
+
+      if(found) break;
+    }
+
+    if(found) break;
+  }
+
+  if(!found){
+    alert("No encontré CHARLES PAREDES en este Excel.");
+    return;
+  }
+
+  const {rows,r}=found;
+
+  let dayRow=-1;
+
+  for(let rr=Math.max(0,r-5);rr<r;rr++){
+
+    const count=rows[rr].filter(
+      v=>typeof v==="number"&&v>=1&&v<=31
+    ).length;
+
+    if(count>=7){
+      dayRow=rr;
+      break;
+    }
+  }
+
+  if(dayRow<0){
+    alert(
+      "Encontré a Charles, pero no pude " +
+      "identificar la fila de fechas."
+    );
+    return;
+  }
+
+  let y=2026;
+  let m=8;
+
+  const text=rows.flat()
+    .filter(Boolean)
+    .join(" ")
+    .toUpperCase();
+
+  const mm=[
+    "ENERO","FEBRERO","MARZO","ABRIL",
+    "MAYO","JUNIO","JULIO","AGOSTO",
+    "SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"
+  ];
+
+  for(let i=0;i<12;i++){
+
+    if(text.includes(mm[i])){
+      m=i;
+      break;
+    }
+  }
+
+  const ym=text.match(/20\d{2}/);
+
+  if(ym){
+    y=+ym[0];
+  }
+
+  const sch={};
+
+  for(let col=0;col<rows[r].length;col++){
+
+    const d=rows[dayRow][col];
+
+    if(
+      !(typeof d==="number"&&d>=1&&d<=31)
+    ){
+      continue;
+    }
+
+    const v=rows[r][col];
+
+    if(
+      v==="L" ||
+      String(v).trim().toUpperCase()==="L"
+    ){
+      sch[d]="L";
+    }
+    else if(Number(v)===1){
+      sch[d]=1;
+    }
+    else if(Number(v)===2){
+      sch[d]=2;
+    }
+  }
+
+  schedules[key(y,m)]=sch;
+  current=new Date(y,m,1);
+
+  save();
+  renderHome();
+  renderCalendar();
+  showView("calendar");
+
+  alert(
+    "Turnos importados correctamente para "+
+    mm[m]+" "+y+"."
+  );
+}
