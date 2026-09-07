@@ -845,7 +845,210 @@ document.getElementById("reminders").onclick=()=>{
 
 document.getElementById("enabled").onchange=save;
 document.getElementById("hour").onchange=save;
+async function importExcel(file){
+  if(!window.XLSX){
+    alert("La biblioteca para leer Excel no está disponible. Conéctate a internet y vuelve a intentarlo.");
+    return;
+  }
 
+  try{
+    const data=await file.arrayBuffer();
+    const book=XLSX.read(data,{cellDates:true});
+
+    let found=null;
+    let sourceSheet=null;
+
+    /*
+      Buscamos exclusivamente a CHARLES PAREDES.
+      Una vez encontrado, utilizamos su misma tabla:
+      - fila de días: la fila inmediatamente superior a su fila
+      - columnas de días: desde la primera columna numérica hasta el último día
+    */
+    for(const name of book.SheetNames){
+      const ws=book.Sheets[name];
+
+      const rows=XLSX.utils.sheet_to_json(ws,{
+        header:1,
+        raw:true,
+        defval:null
+      });
+
+      for(let r=0;r<rows.length;r++){
+        for(let c=0;c<rows[r].length;c++){
+          const value=String(rows[r][c]??"").trim().toUpperCase();
+
+          if(value==="CHARLES PAREDES"){
+            found={rows,r,c};
+            sourceSheet=name;
+            break;
+          }
+        }
+
+        if(found) break;
+      }
+
+      if(found) break;
+    }
+
+    if(!found){
+      alert("No encontré CHARLES PAREDES en este Excel.");
+      return;
+    }
+
+    const {rows,r,c}=found;
+
+    /*
+      El archivo de la empresa utiliza una estructura donde
+      la fila inmediatamente superior a CHARLES contiene
+      los números de los días.
+    */
+    let dayRow=-1;
+
+    for(let rr=r-1;rr>=Math.max(0,r-3);rr--){
+      let validDays=0;
+
+      for(let cc=c;cc<rows[rr].length;cc++){
+        const value=rows[rr][cc];
+
+        if(typeof value==="number" && value>=1 && value<=31){
+          validDays++;
+        }
+      }
+
+      if(validDays>=7){
+        dayRow=rr;
+        break;
+      }
+    }
+
+    if(dayRow<0){
+      alert("Encontré a Charles, pero no pude identificar la fila de fechas.");
+      return;
+    }
+
+    /*
+      Determinamos el mes y año utilizando el encabezado
+      de la misma hoja, no cualquier texto aislado del Excel.
+    */
+    let y=null;
+    let m=null;
+
+    const monthNames=[
+      "ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO",
+      "JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"
+    ];
+
+    /*
+      Primero revisamos las primeras filas de la hoja,
+      donde se encuentra el título del calendario mensual.
+    */
+    for(let rr=0;rr<Math.min(dayRow,12);rr++){
+      const line=rows[rr]
+        .filter(v=>v!==null && v!==undefined && String(v).trim()!=="")
+        .map(v=>String(v).trim().toUpperCase())
+        .join(" ");
+
+      if(!line) continue;
+
+      const yearMatch=line.match(/20\d{2}/);
+
+      if(yearMatch && y===null){
+        y=Number(yearMatch[0]);
+      }
+
+      for(let i=0;i<monthNames.length;i++){
+        if(line.includes(monthNames[i])){
+          m=i;
+          break;
+        }
+      }
+
+      if(y!==null && m!==null) break;
+    }
+
+    if(y===null || m===null){
+      alert("Encontré la tabla de Charles, pero no pude determinar con seguridad el mes y año del Excel.");
+      return;
+    }
+
+    /*
+      Construimos SOLO el calendario correspondiente
+      al Excel importado.
+    */
+    const sch={};
+
+    for(let col=c;col<rows[dayRow].length;col++){
+      const dayValue=rows[dayRow][col];
+
+      if(!(typeof dayValue==="number" && dayValue>=1 && dayValue<=31)){
+        continue;
+      }
+
+      const day=Math.floor(dayValue);
+
+      const value=rows[r][col];
+
+      if(value===null || value===undefined){
+        continue;
+      }
+
+      const normalized=String(value).trim().toUpperCase();
+
+      if(normalized==="L"){
+        sch[day]="L";
+      }else if(Number(value)===1){
+        sch[day]=1;
+      }else if(Number(value)===2){
+        sch[day]=2;
+      }
+    }
+
+    /*
+      IMPORTANTE:
+      No reemplazamos todo "schedules".
+      Solo agregamos/actualizamos el mes del Excel.
+
+      Así:
+      Septiembre + Octubre
+      permanece Septiembre y se agrega Octubre.
+
+      Si Octubre ya existía, solamente se actualiza Octubre.
+    */
+    const monthKey=key(y,m);
+
+    schedules={
+      ...schedules,
+      [monthKey]:sch
+    };
+
+    /*
+      Guardamos TODOS los meses existentes.
+    */
+    save();
+
+    /*
+      Mostramos inmediatamente el mes recién importado.
+    */
+    current=new Date(y,m,1);
+
+    renderHome();
+    renderCalendar();
+    showView("calendar");
+
+    alert(
+      "Turnos importados correctamente para "+
+      monthNames[m]+" "+y+".\n\n"+
+      "Los demás meses guardados se conservaron."
+    );
+
+  }catch(error){
+    console.error(error);
+    alert(
+      "No fue posible interpretar este archivo Excel.\n\n"+
+      "Verifica que corresponda al formato utilizado por la empresa."
+    );
+  }
+}
 async function importExcel(file){
   if(!window.XLSX){
     alert("La biblioteca para leer Excel no está disponible. Conéctate a internet y vuelve a intentarlo.");
@@ -889,64 +1092,7 @@ async function importExcel(file){
       v=>typeof v==="number"&&v>=1&&v<=31
     ).length;
 
-    if(count>=7){
-      dayRow=rr;
-      break;
-    }
-  }
 
-  if(dayRow<0){
-    alert("Encontré a Charles, pero no pude identificar la fila de fechas.");
-    return;
-  }
-
-  let y=2026,m=8;
-  const text=rows.flat().filter(Boolean).join(" ").toUpperCase();
-
-  const mm=[
-    "ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO",
-    "JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"
-  ];
-
-  for(let i=0;i<12;i++){
-    if(text.includes(mm[i])){
-      m=i;
-      break;
-    }
-  }
-
-  const ym=text.match(/20\d{2}/);
-  if(ym) y=+ym[0];
-
-  const sch={};
-
-  for(let col=0;col<rows[r].length;col++){
-    const d=rows[dayRow][col];
-
-    if(!(typeof d==="number"&&d>=1&&d<=31)) continue;
-
-    const v=rows[r][col];
-
-    if(v==="L"||String(v).trim().toUpperCase()==="L")
-      sch[d]="L";
-    else if(Number(v)===1)
-      sch[d]=1;
-    else if(Number(v)===2)
-      sch[d]=2;
-  }
-
-  schedules[key(y,m)]=sch;
-  current=new Date(y,m,1);
-
-  save();
-  renderHome();
-  renderCalendar();
-  showView("calendar");
-
-  alert("Turnos importados correctamente para "+mm[m]+" "+y+".");
-}
-
-document.getElementById("load").onclick=()=>{
   document.getElementById("file").click();
 };
 
