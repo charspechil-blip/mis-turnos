@@ -9,524 +9,297 @@
 
 <style>
 :root{
-  --green:#20a35a;
-  --green-dark:#18894b;
-  --green-soft:#eaf8f0;
-  --blue:#2878d0;
-  --orange:#e58b22;
-  --red:#d64545;
+  --morning:#2878d0;
+  --afternoon:#e58b22;
+  --free:#20a35a;
+  --weekend:#d64545;
   --text:#202124;
-  --muted:#777b82;
-  --line:#e7e8e9;
-  --bg:#f6f7f6;
-  --white:#fff;
+  --muted:#777;
+  --line:#e9e9e9;
+  --bg:#f7f8f7;
 }
-
 *{box-sizing:border-box}
-html{background:var(--bg)}
 body{
-  margin:0;
-  min-height:100vh;
-  background:var(--bg);
-  color:var(--text);
-  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  padding:18px 12px 112px;
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  padding:14px 10px 92px;
 }
-button{font:inherit}
-.app{width:min(100%,560px);margin:auto}
-
-.shell{
-  background:var(--white);
-  border-radius:30px;
-  padding:24px 24px 22px;
-  box-shadow:0 10px 32px rgba(0,0,0,.07);
+.app{max-width:560px;margin:auto}
+.card{
+  background:#fff;border-radius:22px;padding:17px;
+  box-shadow:0 7px 28px rgba(0,0,0,.07);
 }
-
-/* ---------- ENCABEZADO ---------- */
 .app-header{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  margin-bottom:20px;
+  display:flex;align-items:center;gap:11px;margin-bottom:14px;
 }
-.app-logo{
-  width:80px;
-  height:80px;
-  border:3px solid var(--green);
-  border-radius:22px;
-  display:grid;
-  place-items:center;
-  flex:none;
+.app-icon{
+  width:42px;height:42px;border-radius:12px;border:2px solid var(--free);
+  display:grid;place-items:center;color:var(--free);font-size:24px;font-weight:800;flex:none;
 }
-.app-logo svg{width:56px;height:56px}
 .app-title{flex:1;min-width:0}
-.app-title h1{
-  margin:0;
-  font-size:31px;
-  line-height:1.05;
-  font-weight:850;
-  letter-spacing:-.7px;
-}
-.app-title .sub{
-  margin-top:6px;
-  color:var(--muted);
-  font-size:20px;
-  line-height:1.1;
-}
+.app-title h1{font-size:20px;margin:0;font-weight:800}
+.app-title .sub{font-size:12px;color:var(--muted);margin-top:2px}
 .settings-btn{
-  width:62px;
-  height:62px;
-  border:1px solid var(--line);
-  background:#fff;
-  border-radius:20px;
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  flex:none;
+  border:1px solid var(--line);background:#fff;border-radius:12px;
+  width:42px;height:42px;font-size:20px;cursor:pointer;
 }
-.settings-btn svg{width:35px;height:35px}
 
-/* ---------- VISTAS ---------- */
+/* Vistas */
 .view{display:none}
 .view.active{display:block}
 
-/* ---------- TARJETA HOY ---------- */
+/* Pantalla principal */
 .today-card{
-  border:1px solid #e5e7e6;
-  border-radius:25px;
-  padding:24px 22px 20px;
-  text-align:center;
-  background:#fff;
+  border:1px solid #edf0ee;border-radius:18px;padding:18px 15px;
+  text-align:center;background:linear-gradient(180deg,#fff 0%,#fbfdfb 100%);
 }
-.eyebrow{
-  font-size:27px;
-  line-height:1;
-  font-weight:850;
-}
-.today-date{
-  margin-top:9px;
-  color:var(--muted);
-  font-size:24px;
-  line-height:1.15;
-}
+.eyebrow{font-size:13px;font-weight:800;color:#202124}
+.today-date{font-size:15px;color:var(--muted);margin-top:3px}
 .shift-circle{
-  width:190px;
-  height:190px;
-  margin:22px auto 15px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
+  width:104px;height:104px;margin:15px auto 9px;border-radius:50%;
+  display:grid;place-items:center;font-size:48px;
 }
-.shift-circle svg{width:112px;height:112px}
-.shift-circle.morning,
-.shift-circle.afternoon{background:var(--blue)}
-.shift-circle.free{background:var(--green)}
+.shift-circle.morning{background:var(--morning);color:#fff}
+.shift-circle.afternoon{background:var(--afternoon);color:#fff}
+.shift-circle.free{background:var(--free);color:#fff}
 
 .today-status{
-  font-size:45px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-1px;
+  font-size:25px;font-weight:850;letter-spacing:.3px;
+  background:transparent !important;
 }
-.today-status.morning{color:var(--blue)}
-.today-status.afternoon{color:var(--orange)}
-.today-status.free{color:var(--green)}
-
+.today-status.morning{color:var(--morning)}
+.today-status.afternoon{color:var(--afternoon)}
+.today-status.free{color:var(--free)}
 .today-message{
-  margin-top:20px;
-  padding:13px 12px;
-  border-radius:13px;
-  background:var(--green-soft);
-  color:#2d8154;
-  font-size:20px;
-  line-height:1.1;
-  font-weight:750;
+  margin-top:8px;padding:9px;border-radius:10px;
+  background:#e9f8ef;color:#25834d;font-size:12px;font-weight:650;
 }
 
-/* ---------- DOS TARJETAS INFERIORES ---------- */
 .quick-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  margin-top:18px;
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;
 }
 .quick-card{
-  min-height:275px;
-  border:1px solid var(--line);
-  border-radius:23px;
-  padding:20px 14px 16px;
-  text-align:center;
-  background:#fff;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  border:1px solid var(--line);border-radius:16px;padding:14px 12px 12px;
+  min-height:132px;text-align:center;background:#fff;
 }
-.quick-label{
-  align-self:flex-start;
-  text-align:left;
-  width:100%;
-  font-size:20px;
-  line-height:1.1;
-  font-weight:850;
-}
-.quick-date{
-  margin-top:13px;
-  font-size:24px;
-  line-height:1.1;
-  font-weight:800;
-}
-.quick-date.free{color:var(--green)}
+.quick-label{font-size:12px;font-weight:800;text-align:left}
+.quick-value{font-size:13px;margin-top:5px;font-weight:650;color:var(--text)}
 .quick-icon{
-  width:86px;
-  height:86px;
-  margin:12px auto 7px;
-  display:grid;
-  place-items:center;
+  height:42px;margin-top:7px;display:grid;place-items:center;
+  font-size:38px;line-height:1;
 }
-.quick-icon svg{width:86px;height:86px}
 .quick-type{
-  margin-top:auto;
-  font-size:28px;
-  line-height:1;
-  font-weight:850;
+  margin-top:4px;font-size:16px;font-weight:900;letter-spacing:.3px;
 }
-.quick-type.afternoon{color:var(--orange)}
-.quick-type.morning{color:var(--blue)}
-.quick-countdown{
-  margin-top:9px;
-  color:var(--muted);
-  font-size:20px;
-  line-height:1;
+.quick-free{color:var(--free)}
+.quick-afternoon{color:var(--afternoon)}
+.quick-morning{color:var(--morning)}
+.quick-card.free-card .quick-value{color:var(--free);font-weight:800}
+.quick-countdown{font-size:11px;color:var(--muted);margin-top:2px}
+.primary-cta{
+  width:100%;border:0;border-radius:13px;background:var(--free);color:#fff;
+  padding:13px 15px;margin-top:12px;font-size:14px;font-weight:800;cursor:pointer;
 }
 
-/* ---------- CALENDARIO ---------- */
-.calendar-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
+/* Calendario */
+header.calendar-header{
+  display:flex;align-items:center;justify-content:space-between;gap:10px
 }
-.nav{
-  width:58px;
-  height:58px;
-  border:1px solid var(--line);
-  background:#fff;
-  border-radius:17px;
-  font-size:35px;
-  line-height:1;
-  cursor:pointer;
+.nav,.action{
+  border:1px solid var(--line);background:#fff;border-radius:12px;
+  min-width:42px;height:42px;cursor:pointer
 }
+.nav{font-size:23px}
 .title{text-align:center;flex:1;min-width:0}
-.title h2{
-  margin:0;
-  font-size:28px;
-  font-weight:850;
-}
-.title .sub{
-  margin-top:4px;
-  color:var(--muted);
-  font-size:16px;
-}
-.weekdays,.grid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-}
-.weekdays{margin-top:18px}
-.wd{
-  text-align:center;
-  padding:7px 0;
-  color:#666;
-  font-size:15px;
-  font-weight:800;
-}
-.wd.weekend{color:var(--red)}
-.day{
-  height:68px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+h2{font-size:21px;margin:0;font-weight:750}
+.weekdays,.grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.weekdays{margin-top:14px}
+.wd{text-align:center;font-size:12px;font-weight:750;color:#666;padding:8px 0}
+.wd.weekend{color:var(--weekend)}
+.day{height:62px;display:flex;align-items:center;justify-content:center}
 .num{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-  font-weight:700;
-  border:3px solid transparent;
+  width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:600;border:2px solid transparent
 }
-.shift1 .num{color:var(--blue)}
-.shift2 .num{color:var(--orange)}
-.weekend .num{color:var(--red)}
-.free .num{
-  border-color:var(--green);
-  color:var(--green);
-  font-weight:900;
-}
-.free.weekend .num{border-color:var(--green);color:var(--red)}
-.empty{height:68px}
+.day.weekend .num{color:var(--weekend)}
+.day.shift1 .num{color:var(--morning)}
+.day.shift2 .num{color:var(--afternoon)}
+.day.free .num{border:3px solid var(--free);color:var(--free);font-weight:850}
+.day.free.weekend .num{border-color:var(--free);color:var(--weekend)}
+.empty{height:62px}
 
+/* Leyenda: clases limitadas al punto de color para evitar la franja azul */
 .legend{
-  border-top:1px solid var(--line);
-  margin-top:10px;
-  padding-top:16px;
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:10px 22px;
-  font-size:14px;
-  color:#666;
+  border-top:1px solid var(--line);margin-top:8px;padding-top:14px;
+  display:flex;justify-content:center;flex-wrap:wrap;gap:10px 18px;
+  font-size:12px;color:#666
 }
-.legend-item{display:flex;align-items:center;gap:7px}
-.swatch{width:13px;height:13px;border-radius:50%;display:inline-block}
-.swatch.morning{background:var(--blue)}
-.swatch.afternoon{background:var(--orange)}
-.swatch.free-s{border:2px solid var(--green)}
+.legend-item{display:flex;align-items:center;gap:6px}
+.swatch{width:12px;height:12px;border-radius:50%;display:inline-block}
+.swatch.morning{background:var(--morning)}
+.swatch.afternoon{background:var(--afternoon)}
+.swatch.free-s{border:2px solid var(--free);width:14px;height:14px;border-radius:50%}
 
-.toolbar{
-  display:flex;
-  gap:10px;
-  margin-top:16px;
-}
-.action{
-  flex:1;
-  min-height:48px;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:#fff;
-  font-size:14px;
-  font-weight:750;
-  cursor:pointer;
-}
+.toolbar{display:flex;gap:8px;margin-top:14px}
+.action{flex:1;font-size:13px;font-weight:650;padding:0 10px}
 .action.primary{background:#f3f7ff;border-color:#d9e6ff}
 .notice{
-  margin-top:12px;
-  padding:12px 14px;
-  border-radius:14px;
-  background:#fafafa;
-  font-size:13px;
-  color:#666;
-  line-height:1.45;
+  margin-top:10px;padding:10px 12px;border-radius:12px;background:#fafafa;
+  font-size:12px;color:#666;line-height:1.4
 }
 .notice strong{color:var(--text)}
 .file{display:none}
-
 .settings{
-  margin-top:14px;
-  padding-top:14px;
-  border-top:1px solid var(--line);
-  display:none;
+  margin-top:12px;border-top:1px solid var(--line);padding-top:12px;display:none
 }
 .settings.open{display:block}
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-}
-.toggle{accent-color:var(--green)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.toggle{accent-color:var(--free)}
 select{
-  font-size:16px;
-  padding:8px 10px;
-  border:1px solid var(--line);
-  border-radius:10px;
-  background:#fff;
+  font-size:16px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff
 }
-.status{margin-top:8px;color:var(--muted);font-size:12px}
+.status{margin-top:8px;font-size:12px;color:var(--muted)}
 
-/* ---------- NAVEGACIÓN INFERIOR ---------- */
+/* Barra inferior de 4 secciones, como en el diseño aprobado */
 .bottom-nav{
-  position:fixed;
-  left:50%;
-  bottom:14px;
-  transform:translateX(-50%);
-  width:min(540px,calc(100% - 28px));
-  background:rgba(255,255,255,.98);
-  border:1px solid var(--line);
-  box-shadow:0 9px 28px rgba(0,0,0,.12);
-  border-radius:24px;
-  padding:8px 9px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:5px;
-  z-index:20;
+  position:fixed;left:50%;bottom:10px;transform:translateX(-50%);
+  width:min(540px,calc(100% - 24px));background:rgba(255,255,255,.97);
+  border:1px solid var(--line);box-shadow:0 7px 24px rgba(0,0,0,.12);
+  border-radius:18px;padding:7px 8px;display:grid;
+  grid-template-columns:repeat(4,1fr);gap:4px;z-index:10
 }
 .tab{
-  min-width:0;
-  min-height:74px;
-  border:0;
-  background:transparent;
-  border-radius:17px;
-  padding:8px 4px 6px;
-  color:#777;
-  font-size:14px;
-  font-weight:750;
-  cursor:pointer;
+  border:0;background:transparent;border-radius:12px;padding:8px 3px;
+  color:#777;font-size:10px;font-weight:700;cursor:pointer
 }
-.tab-icon{
-  height:34px;
-  display:grid;
-  place-items:center;
-  margin-bottom:3px;
-}
-.tab-icon svg{width:29px;height:29px}
-.tab.active{
-  background:var(--green-soft);
-  color:var(--green);
-}
-.tab.active .tab-icon svg{stroke:var(--green)}
+.tab-icon{display:block;font-size:19px;line-height:20px;margin-bottom:2px}
+.tab.active{background:#eaf8f0;color:var(--free)}
+.tab.placeholder{opacity:.82}
 
+
+
+/* Escala ampliada — versión preferida */
+.card{border-radius:30px;padding:26px}
+.app-header{gap:15px;margin-bottom:20px}
+.app-icon{width:80px;height:80px;border-radius:22px;font-size:31px}
+.app-title h1{font-size:31px;line-height:1.05}
+.app-title .sub{font-size:20px;margin-top:6px}
+.settings-btn{width:62px;height:62px;border-radius:20px;font-size:31px}
+.today-card{border-radius:25px;padding:24px 22px 20px}
+.eyebrow{font-size:27px;line-height:1}
+.today-date{font-size:24px;line-height:1.15;margin-top:9px}
+.shift-circle{width:190px;height:190px;margin:22px auto 15px;font-size:90px}
+.today-status{font-size:45px;line-height:1;letter-spacing:-1px}
+.today-message{margin-top:20px;padding:13px 12px;border-radius:13px;font-size:20px;line-height:1.1}
+.quick-grid{gap:16px;margin-top:18px}
+.quick-card{min-height:275px;border-radius:23px;padding:20px 14px 16px}
+.quick-label{font-size:20px;line-height:1.1;min-height:44px;display:flex;align-items:flex-start}
+.quick-value{font-size:24px;line-height:1.1;margin-top:13px;min-height:53px;display:flex;align-items:flex-start;justify-content:center}
+.quick-icon{width:86px;height:86px;margin:12px auto 7px;font-size:54px}
+.quick-type{margin-top:auto;font-size:28px;line-height:1}
+.quick-countdown{margin-top:9px;font-size:20px;line-height:1}
+.primary-cta{border-radius:16px;padding:17px 16px;margin-top:18px;font-size:23px;line-height:1}
+.bottom-nav{bottom:14px;width:min(540px,calc(100% - 28px));border-radius:24px;padding:8px 9px;gap:5px}
+.tab{min-height:74px;border-radius:17px;padding:8px 4px 6px;font-size:14px}
+.tab-icon{height:34px;line-height:1;margin-bottom:3px}
 @media(max-width:430px){
-  body{padding:12px 10px 104px}
-  .shell{padding:18px 16px 18px;border-radius:28px}
-  .app-header{gap:11px;margin-bottom:16px}
-  .app-logo{width:66px;height:66px;border-radius:18px}
-  .app-logo svg{width:47px;height:47px}
-  .app-title h1{font-size:26px}
-  .app-title .sub{font-size:17px;margin-top:4px}
-  .settings-btn{width:54px;height:54px;border-radius:18px}
-  .settings-btn svg{width:30px;height:30px}
-  .today-card{padding:21px 14px 18px;border-radius:22px}
-  .eyebrow{font-size:23px}
-  .today-date{font-size:21px}
-  .shift-circle{width:150px;height:150px;margin-top:20px}
-  .shift-circle svg{width:91px;height:91px}
-  .today-status{font-size:39px}
-  .today-message{font-size:17px;margin-top:17px}
-  .quick-grid{gap:10px;margin-top:16px}
-  .quick-card{min-height:230px;padding:17px 10px 14px;border-radius:20px}
-  .quick-label{font-size:17px}
-  .quick-date{font-size:21px;margin-top:11px}
-  .quick-icon,.quick-icon svg{width:72px;height:72px}
-  .quick-type{font-size:25px}
-  .quick-countdown{font-size:17px}
-  .tab{font-size:12px;min-height:69px}
-  .tab-icon svg{width:26px;height:26px}
+ body{padding:12px 10px 104px}
+ .card{padding:18px 16px;border-radius:28px}
+ .app-icon{width:66px;height:66px;border-radius:18px;font-size:28px}
+ .app-title h1{font-size:26px}
+ .app-title .sub{font-size:17px;margin-top:4px}
+ .settings-btn{width:54px;height:54px;border-radius:18px}
+ .today-card{padding:21px 14px;border-radius:22px}
+ .eyebrow{font-size:23px}
+ .today-date{font-size:21px}
+ .shift-circle{width:150px;height:150px;margin-top:20px}
+ .today-status{font-size:39px}
+ .today-message{font-size:17px;margin-top:17px}
+ .quick-grid{gap:10px;margin-top:16px}
+ .quick-card{min-height:230px;padding:17px 10px 14px;border-radius:20px}
+ .quick-label{font-size:17px;min-height:37px}
+ .quick-value{font-size:21px;margin-top:11px;min-height:46px}
+ .quick-icon{width:72px;height:72px}
+ .quick-type{font-size:25px}
+ .quick-countdown{font-size:17px}
+ .primary-cta{font-size:19px;padding:16px}
+ .tab{font-size:12px;min-height:69px}
 }
-
 @media(max-width:350px){
-  .app-title h1{font-size:23px}
-  .app-title .sub{font-size:15px}
-  .today-date{font-size:18px}
-  .today-status{font-size:34px}
-  .quick-label{font-size:15px}
-  .quick-date{font-size:18px}
-  .quick-type{font-size:22px}
-  .quick-countdown{font-size:15px}
-  .tab{font-size:10px}
+ .app-title h1{font-size:23px}
+ .app-title .sub{font-size:15px}
+ .today-date{font-size:18px}
+ .today-status{font-size:34px}
+ .quick-label{font-size:15px;min-height:33px}
+ .quick-value{font-size:18px;min-height:40px}
+ .quick-type{font-size:22px}
+ .quick-countdown{font-size:15px}
+ .tab{font-size:10px}
 }
 </style>
 </head>
 
 <body>
 <main class="app">
-<section class="shell">
+<section class="card">
 
 <header class="app-header">
-  <div class="app-logo" aria-hidden="true">
-    <svg viewBox="0 0 64 64" fill="none">
-      <rect x="8" y="8" width="48" height="48" rx="9" stroke="currentColor" stroke-width="4"/>
-      <path d="M16 22h32M20 5v10M44 5v10" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-      <path d="m19 37 9 9 18-20" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-
+  <div class="app-icon">✓</div>
   <div class="app-title">
     <h1>Mis Turnos</h1>
     <div class="sub">Charles Paredes</div>
   </div>
-
-  <button class="settings-btn" id="settingsBtn" type="button" aria-label="Ajustes">
-    <svg viewBox="0 0 64 64" fill="none">
-      <circle cx="32" cy="32" r="8" stroke="currentColor" stroke-width="4"/>
-      <path d="M32 9v8M32 47v8M9 32h8M47 32h8M15.7 15.7l5.7 5.7M42.6 42.6l5.7 5.7M48.3 15.7l-5.7 5.7M21.4 42.6l-5.7 5.7" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-      <path d="m38 13 3-4 5 3-1 5M51 38l4 3-3 5-5-1M26 51l-3 4-5-3 1-5M13 26l-4-3 3-5 5 1" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  </button>
+  <button class="settings-btn" type="button" aria-label="Ajustes">⚙</button>
 </header>
 
 <section id="homeView" class="view active">
-
   <div class="today-card">
     <div class="eyebrow">HOY</div>
     <div id="todayDate" class="today-date"></div>
-
-    <div id="todayCircle" class="shift-circle morning" aria-hidden="true"></div>
-
-    <div id="todayStatus" class="today-status morning">MAÑANA</div>
-    <div id="todayMessage" class="today-message">¡Buen turno!</div>
+    <div id="todayCircle" class="shift-circle free" aria-hidden="true">🛋️</div>
+    <div id="todayStatus" class="today-status free">LIBRE</div>
+    <div id="todayMessage" class="today-message">¡A disfrutar tu día!</div>
   </div>
 
   <div class="quick-grid">
-
     <div class="quick-card">
       <div class="quick-label">Próximo turno</div>
-      <div id="nextShiftDate" class="quick-date"></div>
-      <div id="nextShiftIcon" class="quick-icon" aria-hidden="true"></div>
-      <div id="nextShiftType" class="quick-type"></div>
+      <div id="nextShiftDate" class="quick-value"></div>
+      <div id="nextShiftIcon" class="quick-icon" aria-hidden="true">☀️</div>
+      <div id="nextShiftType" class="quick-type quick-afternoon"></div>
     </div>
-
-    <div class="quick-card">
+    <div class="quick-card free-card">
       <div class="quick-label">Próximo día libre</div>
-      <div id="nextFreeDate" class="quick-date free"></div>
-
-      <div class="quick-icon" aria-hidden="true">
-        <svg viewBox="0 0 120 100" fill="none">
-          <path d="M20 58h80v20H20z" fill="#238bd0"/>
-          <path d="M28 48c0-8 7-14 15-14h34c8 0 15 6 15 14v10H28z" fill="#2ba2df"/>
-          <path d="M18 61v18M102 61v18M27 78v10M93 78v10" stroke="#2374a8" stroke-width="6" stroke-linecap="round"/>
-          <path d="M91 10h4v25h-4z" fill="#d99b2b"/>
-          <path d="M78 10c0-7 6-10 15-10s15 3 15 10v4H78z" fill="#ffd22e"/>
-          <path d="M80 14h26" stroke="#f0a900" stroke-width="3"/>
-        </svg>
-      </div>
-
+      <div id="nextFreeDate" class="quick-value"></div>
+      <div id="nextFreeIcon" class="quick-icon quick-free" aria-hidden="true">🛋️</div>
       <div id="nextFreeCountdown" class="quick-countdown"></div>
     </div>
-
   </div>
 
 </section>
 
 <section id="calendarView" class="view">
-
   <header class="calendar-header">
     <button class="nav" id="prev" type="button" aria-label="Mes anterior">‹</button>
-
     <div class="title">
       <h2 id="month">Septiembre 2026</h2>
       <div class="sub">Turnos de Charles Paredes</div>
     </div>
-
     <button class="nav" id="next" type="button" aria-label="Mes siguiente">›</button>
   </header>
 
   <div class="weekdays">
-    <div class="wd">Lun</div>
-    <div class="wd">Mar</div>
-    <div class="wd">Mié</div>
-    <div class="wd">Jue</div>
-    <div class="wd">Vie</div>
-    <div class="wd weekend">Sáb</div>
-    <div class="wd weekend">Dom</div>
+    <div class="wd">Lun</div><div class="wd">Mar</div><div class="wd">Mié</div>
+    <div class="wd">Jue</div><div class="wd">Vie</div>
+    <div class="wd weekend">Sáb</div><div class="wd weekend">Dom</div>
   </div>
 
   <div id="grid" class="grid" aria-live="polite"></div>
 
   <div class="legend">
-    <div class="legend-item">
-      <span class="swatch morning"></span>Mañana
-    </div>
-
-    <div class="legend-item">
-      <span class="swatch afternoon"></span>Tarde
-    </div>
-
-    <div class="legend-item">
-      <span class="swatch free-s"></span>Libre
-    </div>
+    <div class="legend-item"><span class="swatch morning"></span>Mañana</div>
+    <div class="legend-item"><span class="swatch afternoon"></span>Tarde</div>
+    <div class="legend-item"><span class="swatch free-s"></span>Libre</div>
   </div>
 
   <div class="toolbar">
@@ -537,19 +310,15 @@ select{
   <input id="file" class="file" type="file" accept=".xlsx,.xls,.xlsm">
 
   <div id="settings" class="settings">
-
     <div class="row">
       <label for="enabled"><strong>Recordatorio del día anterior</strong></label>
       <input id="enabled" class="toggle" type="checkbox">
     </div>
-
     <div class="row" style="margin-top:10px">
       <label for="hour">Hora del aviso</label>
       <select id="hour"></select>
     </div>
-
     <div class="status" id="status"></div>
-
   </div>
 
   <div class="notice">
@@ -557,754 +326,263 @@ select{
     La app busca automáticamente “CHARLES PAREDES” y reconoce
     <b>1</b> = mañana, <b>2</b> = tarde y <b>L</b> = libre.
   </div>
-
 </section>
 
 </section>
 </main>
 
 <nav class="bottom-nav" aria-label="Navegación principal">
-
   <button class="tab active" id="tabHome" type="button">
-    <span class="tab-icon">
-      <svg viewBox="0 0 64 64" fill="none">
-        <path d="M10 29 32 11l22 18v24H10z" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
-        <path d="M23 53V38h18v15" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
-      </svg>
-    </span>
-    Inicio
+    <span class="tab-icon">⌂</span>Inicio
   </button>
-
   <button class="tab" id="tabCalendar" type="button">
-    <span class="tab-icon">
-      <svg viewBox="0 0 64 64" fill="none">
-        <rect x="10" y="13" width="44" height="42" rx="6" stroke="currentColor" stroke-width="4"/>
-        <path d="M10 25h44M20 7v12M44 7v12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-        <path d="M21 35h5M31 35h5M41 35h4M21 44h5M31 44h5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-      </svg>
-    </span>
-    Calendario
+    <span class="tab-icon">▣</span>Calendario
   </button>
-
-  <button class="tab" id="tabStats" type="button">
-    <span class="tab-icon">
-      <svg viewBox="0 0 64 64" fill="none">
-        <path d="M10 54h44" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-        <rect x="13" y="35" width="8" height="19" rx="2" stroke="currentColor" stroke-width="4"/>
-        <rect x="28" y="24" width="8" height="30" rx="2" stroke="currentColor" stroke-width="4"/>
-        <rect x="43" y="12" width="8" height="42" rx="2" stroke="currentColor" stroke-width="4"/>
-      </svg>
-    </span>
-    Estadísticas
+  <button class="tab placeholder" id="tabStats" type="button">
+    <span class="tab-icon">▥</span>Estadísticas
   </button>
-
-  <button class="tab" id="tabReminders" type="button">
-    <span class="tab-icon">
-      <svg viewBox="0 0 64 64" fill="none">
-        <path d="M18 46h28l-3-5V28c0-8-5-13-11-13S21 20 21 28v13z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
-        <path d="M26 51c1 4 4 6 6 6s5-2 6-6M32 9v4" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-      </svg>
-    </span>
-    Recordatorios
+  <button class="tab placeholder" id="tabReminders" type="button">
+    <span class="tab-icon">♧</span>Recordatorios
   </button>
-
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
 <script>
-/* =========================================================
-   DATOS INICIALES
-   ========================================================= */
+const defaultSchedule={"2026-09":{"1":1,"2":1,"3":"L","4":1,"5":1,"6":1,"7":"L","8":2,"9":2,"10":2,"11":2,"12":2,"13":"L","14":1,"15":1,"16":1,"17":1,"18":1,"19":"L","20":1,"21":2,"22":2,"23":"L","24":2,"25":2,"26":2,"27":"L","28":1,"29":1,"30":1}};
+let schedules=defaultSchedule,current=new Date(2026,8,1);
 
-const defaultSchedule={
-  "2026-09":{
-    "1":1,"2":1,"3":"L","4":1,"5":1,"6":1,"7":"L",
-    "8":2,"9":2,"10":2,"11":2,"12":2,"13":"L",
-    "14":1,"15":1,"16":1,"17":1,"18":1,"19":"L",
-    "20":1,"21":2,"22":2,"23":"L","24":2,"25":2,"26":2,"27":"L",
-    "28":1,"29":1,"30":1
-  }
-};
+const months=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
+daysShort=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 
-let schedules=defaultSchedule;
-let current=new Date(2026,8,1);
-
-const months=[
-  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
-  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
-];
-
-const daysShort=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-
-function key(y,m){
-  return y+"-"+String(m+1).padStart(2,"0");
-}
-
-function shiftLabel(v){
-  return v===1 ? "Mañana" : v===2 ? "Tarde" : "Libre";
-}
-
-function shiftClass(v){
-  return v===1 ? "morning" : v===2 ? "afternoon" : "free";
-}
-
-function sunSvg(){
-  return `<svg viewBox="0 0 120 120" fill="none">
-    <circle cx="60" cy="60" r="23" fill="#ffbe22"/>
-    <circle cx="53" cy="52" r="5" fill="#ffd95a"/>
-    <path d="M60 10v16M60 94v16M10 60h16M94 60h16M24.6 24.6l11.3 11.3M84.1 84.1l11.3 11.3M95.4 24.6 84.1 35.9M35.9 84.1 24.6 95.4" stroke="#f4a51c" stroke-width="6" stroke-linecap="round"/>
-  </svg>`;
-}
-
-function moonSvg(){
-  return `<svg viewBox="0 0 120 120" fill="none">
-    <path d="M78 13c-20 9-31 27-31 48 0 22 14 39 35 46-6 2-12 3-18 3-28 0-51-22-51-50S36 10 64 10c5 0 10 1 14 3z" fill="#ffd331"/>
-    <path d="M86 20c-7 4-13 9-17 16" stroke="#ffe06b" stroke-width="4" stroke-linecap="round"/>
-  </svg>`;
-}
-
-function sofaSvg(){
-  return `<svg viewBox="0 0 120 100" fill="none">
-    <path d="M20 58h80v20H20z" fill="#238bd0"/>
-    <path d="M28 48c0-8 7-14 15-14h34c8 0 15 6 15 14v10H28z" fill="#2ba2df"/>
-    <path d="M18 61v18M102 61v18M27 78v10M93 78v10" stroke="#2374a8" stroke-width="6" stroke-linecap="round"/>
-    <path d="M91 10h4v25h-4z" fill="#d99b2b"/>
-    <path d="M78 10c0-7 6-10 15-10s15 3 15 10v4H78z" fill="#ffd22e"/>
-    <path d="M80 14h26" stroke="#f0a900" stroke-width="3"/>
-  </svg>`;
-}
-
-function formatDate(dt){
-  return daysShort[dt.getDay()]+" "+dt.getDate()+" de "+months[dt.getMonth()];
-}
+function key(y,m){return y+"-"+String(m+1).padStart(2,"0")}
+function shiftLabel(v){return v===1?"Mañana":v===2?"Tarde":"Libre"}
+function shiftClass(v){return v===1?"morning":v===2?"afternoon":"free"}
+function shiftIcon(v){return v===1?"☀️":v===2?"🌙":"🛋️"}
+function formatDate(dt){return daysShort[dt.getDay()]+" "+dt.getDate()+" de "+months[dt.getMonth()]}
 
 function allDaysFromToday(){
-  const out=[],now=new Date();
-  now.setHours(0,0,0,0);
-
-  for(let i=0;i<370;i++){
-    const dt=new Date(now);
-    dt.setDate(now.getDate()+i);
-
-    const sch=schedules[key(dt.getFullYear(),dt.getMonth())]||{};
-    const v=sch[dt.getDate()];
-
-    if(v!==undefined) out.push({dt,v});
-  }
-
-  return out;
+ const out=[],now=new Date();now.setHours(0,0,0,0);
+ for(let i=0;i<370;i++){
+   const dt=new Date(now);dt.setDate(now.getDate()+i);
+   const sch=schedules[key(dt.getFullYear(),dt.getMonth())]||{};
+   const v=sch[dt.getDate()];
+   if(v!==undefined)out.push({dt,v})
+ }
+ return out;
 }
 
 function renderHome(){
-  const now=new Date();
-  now.setHours(0,0,0,0);
+ const now=new Date();
+ now.setHours(0,0,0,0);
+ const sch=schedules[key(now.getFullYear(),now.getMonth())]||{};
+ const today=sch[now.getDate()];
+ const circle=document.getElementById("todayCircle");
+ const status=document.getElementById("todayStatus");
 
-  const sch=schedules[key(now.getFullYear(),now.getMonth())]||{};
-  const today=sch[now.getDate()];
+ document.getElementById("todayDate").textContent=formatDate(now);
+ circle.className="shift-circle "+shiftClass(today);
+ circle.textContent=shiftIcon(today);
+ status.className="today-status "+shiftClass(today);
+ status.textContent=shiftLabel(today).toUpperCase();
 
-  const circle=document.getElementById("todayCircle");
-  const status=document.getElementById("todayStatus");
+ document.getElementById("todayMessage").textContent=
+   today===undefined?"Sin turno cargado para hoy":
+   today===1?"¡Buen turno!":
+   today===2?"¡Buen turno!":"¡A disfrutar tu día!";
 
-  document.getElementById("todayDate").textContent=formatDate(now);
+ const future=allDaysFromToday().filter(x=>x.dt.getTime()>now.getTime());
+ const ns=future.find(x=>x.v===1||x.v===2),nf=future.find(x=>x.v==="L");
 
-  circle.className="shift-circle "+shiftClass(today);
+ document.getElementById("nextShiftDate").textContent=ns?formatDate(ns.dt):"Sin datos";
 
-  if(today===1 || today===2){
-    circle.innerHTML=sunSvg();
-  }else{
-    circle.innerHTML=sofaSvg();
-  }
+ const nsi=document.getElementById("nextShiftIcon");
+ nsi.textContent=ns?shiftIcon(ns.v):"";
+ nsi.className="quick-icon "+(ns?"quick-"+shiftClass(ns.v):"");
+ const nst=document.getElementById("nextShiftType");
+ nst.textContent=ns?shiftLabel(ns.v):"";
+ nst.className="quick-type "+(ns?"quick-"+shiftClass(ns.v):"");
 
-  status.className="today-status "+shiftClass(today);
-  status.textContent=shiftLabel(today).toUpperCase();
-
-  document.getElementById("todayMessage").textContent=
-    today===undefined ? "Sin turno cargado para hoy" :
-    today===1 ? "¡Buen turno!" :
-    today===2 ? "¡Buen turno!" :
-    "¡A disfrutar tu día!";
-
-  const future=allDaysFromToday().filter(
-    x=>x.dt.getTime()>now.getTime()
-  );
-
-  const ns=future.find(x=>x.v===1||x.v===2);
-  const nf=future.find(x=>x.v==="L");
-
-  document.getElementById("nextShiftDate").textContent=
-    ns ? formatDate(ns.dt) : "Sin datos";
-
-  document.getElementById("nextShiftIcon").innerHTML=
-    ns ? (ns.v===1 ? sunSvg() : moonSvg()) : "";
-
-  const type=document.getElementById("nextShiftType");
-
-  type.textContent=ns ? shiftLabel(ns.v) : "";
-  type.className="quick-type "+(ns ? shiftClass(ns.v) : "");
-
-  document.getElementById("nextFreeDate").textContent=
-    nf ? formatDate(nf.dt) : "Sin datos";
-
-  const days=nf ? Math.round((nf.dt-now)/86400000) : null;
-
-  document.getElementById("nextFreeCountdown").textContent=
-    nf ? (days===1 ? "En 1 día" : "En "+days+" días") : "";
+ document.getElementById("nextFreeDate").textContent=nf?formatDate(nf.dt):"Sin datos";
+ const nfi=document.getElementById("nextFreeIcon");
+ nfi.textContent=nf?"🛋️":"";
+ document.getElementById("nextFreeCountdown").textContent=
+   nf?((nf.dt-now)/86400000===1?"En 1 día":"En "+Math.round((nf.dt-now)/86400000)+" días"):"";
 }
 
 function renderCalendar(){
-  const y=current.getFullYear();
-  const m=current.getMonth();
-  const k=key(y,m);
+ const y=current.getFullYear(),m=current.getMonth(),k=key(y,m);
+ document.getElementById("month").textContent=months[m]+" "+y;
+ const grid=document.getElementById("grid");
+ grid.innerHTML="";
+ const start=(new Date(y,m,1).getDay()+6)%7;
+ const days=new Date(y,m+1,0).getDate();
+ const sch=schedules[k]||{};
 
-  document.getElementById("month").textContent=months[m]+" "+y;
+ for(let i=0;i<start;i++){
+   let e=document.createElement("div");
+   e.className="empty";
+   grid.appendChild(e)
+ }
 
-  const grid=document.getElementById("grid");
-  grid.innerHTML="";
-
-  const start=(new Date(y,m,1).getDay()+6)%7;
-  const days=new Date(y,m+1,0).getDate();
-  const sch=schedules[k]||{};
-
-  for(let i=0;i<start;i++){
-    const e=document.createElement("div");
-    e.className="empty";
-    grid.appendChild(e);
-  }
-
-  for(let d=1;d<=days;d++){
-    const dt=new Date(y,m,d);
-    const dow=(dt.getDay()+6)%7;
-    const v=sch[d];
-
-    let cls="day"+(dow>=5 ? " weekend":"");
-
-    if(v===1) cls+=" shift1";
-    if(v===2) cls+=" shift2";
-    if(v==="L") cls+=" free";
-
-    const e=document.createElement("div");
-    e.className=cls;
-    e.innerHTML='<div class="num">'+d+"</div>";
-
-    grid.appendChild(e);
-  }
+ for(let d=1;d<=days;d++){
+   const dt=new Date(y,m,d),dow=(dt.getDay()+6)%7,v=sch[d];
+   let cls="day"+(dow>=5?" weekend":"");
+   if(v===1)cls+=" shift1";
+   if(v===2)cls+=" shift2";
+   if(v==="L")cls+=" free";
+   let e=document.createElement("div");
+   e.className=cls;
+   e.innerHTML='<div class="num">'+d+"</div>";
+   grid.appendChild(e)
+ }
 }
 
 function showView(name){
-  const home=name==="home";
-  const calendar=!home;
-
-  document.getElementById("homeView").classList.toggle("active",home);
-  document.getElementById("calendarView").classList.toggle("active",calendar);
-
-  document.getElementById("tabHome").classList.toggle("active",home);
-  document.getElementById("tabCalendar").classList.toggle("active",calendar);
-
-  if(home){
-    renderHome();
-  }else{
-    renderCalendar();
-  }
-
-  window.scrollTo({top:0,behavior:"smooth"});
+ const home=name==="home",calendar=!home;
+ document.getElementById("homeView").classList.toggle("active",home);
+ document.getElementById("calendarView").classList.toggle("active",calendar);
+ document.getElementById("tabHome").classList.toggle("active",home);
+ document.getElementById("tabCalendar").classList.toggle("active",calendar);
+ if(home)renderHome();else renderCalendar();
+ window.scrollTo({top:0,behavior:"smooth"})
 }
 
-document.getElementById("tabHome").onclick=()=>{
-  showView("home");
-};
-
-document.getElementById("tabCalendar").onclick=()=>{
-  showView("calendar");
-};
-
-document.getElementById("tabStats").onclick=()=>{
-  alert("La sección Estadísticas se incorporará en el siguiente paso.");
-};
-
-document.getElementById("tabReminders").onclick=()=>{
-  showView("calendar");
-
-  document.getElementById("settings").classList.add("open");
-
-  window.setTimeout(()=>{
-    document.getElementById("settings").scrollIntoView({
-      behavior:"smooth",
-      block:"center"
-    });
-  },80);
-};
-
-document.getElementById("prev").onclick=()=>{
-  current.setMonth(current.getMonth()-1);
-  renderCalendar();
-};
-
-document.getElementById("next").onclick=()=>{
-  current.setMonth(current.getMonth()+1);
-  renderCalendar();
-};
-
 function populateHours(){
-  const s=document.getElementById("hour");
-
-  for(let h=0;h<24;h++){
-    const o=document.createElement("option");
-
-    o.value=h;
-    o.textContent=String(h).padStart(2,"0")+":00";
-
-    s.appendChild(o);
-  }
-
-  s.value=20;
+ const s=document.getElementById("hour");
+ for(let h=0;h<24;h++){
+   let o=document.createElement("option");
+   o.value=h;
+   o.textContent=String(h).padStart(2,"0")+":00";
+   s.appendChild(o)
+ }
+ s.value=20
 }
 
 function save(){
-  try{
-    localStorage.setItem(
-      "turnosSchedules",
-      JSON.stringify(schedules)
-    );
-
-    localStorage.setItem(
-      "turnosReminder",
-      JSON.stringify({
-        enabled:document.getElementById("enabled").checked,
-        hour:+document.getElementById("hour").value
-      })
-    );
-  }catch(e){}
+ try{
+   localStorage.setItem("turnosSchedules",JSON.stringify(schedules));
+   localStorage.setItem("turnosReminder",JSON.stringify({
+     enabled:document.getElementById("enabled").checked,
+     hour:+document.getElementById("hour").value
+   }))
+ }catch(e){}
 }
 
 function loadSaved(){
-  try{
-    const a=localStorage.getItem("turnosSchedules");
-    const b=localStorage.getItem("turnosReminder");
-
-    if(a){
-      schedules=JSON.parse(a);
-    }
-
-    if(b){
-      const x=JSON.parse(b);
-
-      document.getElementById("enabled").checked=!!x.enabled;
-      document.getElementById("hour").value=x.hour??20;
-    }
-  }catch(e){}
-}
-
-document.getElementById("settingsBtn").onclick=()=>{
-  showView("calendar");
-  document.getElementById("settings").classList.add("open");
-};
-
-document.getElementById("reminders").onclick=()=>{
-  document.getElementById("settings").classList.toggle("open");
-};
-
-document.getElementById("enabled").onchange=save;
-document.getElementById("hour").onchange=save;
-
-
-/* =========================================================
-   IMPORTACIÓN FLEXIBLE DE EXCEL
-   ========================================================= */
-
-function normalizeText(value){
-  return String(value??"")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .trim()
-    .toUpperCase();
-}
-
-function getMonthFromFilename(filename){
-
-  const text=normalizeText(filename);
-
-  const monthAliases=[
-    ["ENERO","ENE"],
-    ["FEBRERO","FEB"],
-    ["MARZO","MAR"],
-    ["ABRIL","ABR"],
-    ["MAYO","MAY"],
-    ["JUNIO","JUN"],
-    ["JULIO","JUL"],
-    ["AGOSTO","AGO"],
-    ["SEPTIEMBRE","SEPT","SEP","SETIEMBRE","SET"],
-    ["OCTUBRE","OCT"],
-    ["NOVIEMBRE","NOV"],
-    ["DICIEMBRE","DIC"]
-  ];
-
-  for(let i=0;i<monthAliases.length;i++){
-
-    for(const alias of monthAliases[i]){
-
-      if(text.includes(alias)){
-        return i;
-      }
-
-    }
-  }
-
-  return -1;
-}
-
-  
-
-function getYearFromText(text){
-
-  const match=String(text||"").match(/\b(20\d{2})\b/);
-
-  return match ? Number(match[1]) : null;
-}
-
-function findCharles(rows){
-
-  for(let r=0;r<rows.length;r++){
-
-    for(let c=0;c<rows[r].length;c++){
-
-      const value=normalizeText(rows[r][c]);
-
-      if(value==="CHARLES PAREDES"){
-        return {
-          rows,
-          row:r,
-          col:c
-        };
-      }
-    }
-  }
-
-  return null;
-}
-
-function findDayRow(rows,charlesRow){
-
-  let best=null;
-
-  const start=Math.max(0,charlesRow-8);
-
-  for(let r=start;r<charlesRow;r++){
-
-    const row=rows[r]||[];
-
-    const positions=[];
-    const seen=new Set();
-
-    for(let c=0;c<row.length;c++){
-
-      const value=row[c];
-
-      if(typeof value==="number" &&
-         Number.isInteger(value) &&
-         value>=1 &&
-         value<=31){
-
-        if(!seen.has(value)){
-          seen.add(value);
-          positions.push({
-            col:c,
-            day:value
-          });
-        }
-      }
-    }
-
-    if(positions.length<7) continue;
-
-    let score=positions.length;
-
-    if(seen.has(1)) score+=10;
-    if(seen.has(31)) score+=5;
-
-    if(!best || score>best.score){
-      best={
-        row:r,
-        positions,
-        score
-      };
-    }
-  }
-
-  return best;
-}
-
-function readCharlesSchedule(rows,charlesRow,dayInfo){
-
-  const schedule={};
-  const charles=rows[charlesRow]||[];
-
-  for(const item of dayInfo.positions){
-
-    const day=item.day;
-    const value=charles[item.col];
-
-    if(value===null || value===undefined) continue;
-
-    const normalized=normalizeText(value);
-
-    if(normalized==="L"){
-      schedule[day]="L";
-      continue;
-    }
-
-    const number=Number(value);
-
-    if(number===1){
-      schedule[day]=1;
-    }else if(number===2){
-      schedule[day]=2;
-    }
-  }
-
-  return schedule;
+ try{
+   let a=localStorage.getItem("turnosSchedules"),
+       b=localStorage.getItem("turnosReminder");
+   if(a)schedules=JSON.parse(a);
+   if(b){
+     let x=JSON.parse(b);
+     document.getElementById("enabled").checked=!!x.enabled;
+     document.getElementById("hour").value=x.hour??20
+   }
+ }catch(e){}
 }
 
 async function importExcel(file){
+ if(!window.XLSX){
+   alert("La biblioteca para leer Excel no está disponible. Conéctate a internet y vuelve a intentarlo.");
+   return
+ }
+ const data=await file.arrayBuffer();
+ const book=XLSX.read(data,{cellDates:true});
+ let found=null;
 
-  if(!window.XLSX){
-    alert(
-      "La biblioteca para leer Excel no está disponible. "+
-      "Conéctate a internet y vuelve a intentarlo."
-    );
-    return;
-  }
+ for(const name of book.SheetNames){
+   const ws=book.Sheets[name],
+         rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
+   for(let r=0;r<rows.length;r++){
+     for(let c=0;c<rows[r].length;c++){
+       if(String(rows[r][c]??"").trim().toUpperCase()==="CHARLES PAREDES"){
+         found={rows,r,c};break
+       }
+     }
+     if(found)break
+   }
+   if(found)break
+ }
 
-  try{
+ if(!found){
+   alert("No encontré CHARLES PAREDES en este Excel.");
+   return
+ }
 
-    /*
-      -------------------------------------------------------
-      1. EL MES SE BUSCA PRIMERO EN EL NOMBRE DEL ARCHIVO.
-      -------------------------------------------------------
-    */
+ const {rows,r}=found;
+ let dayRow=-1;
+ for(let rr=Math.max(0,r-5);rr<r;rr++){
+   const count=rows[rr].filter(v=>typeof v==="number"&&v>=1&&v<=31).length;
+   if(count>=7){dayRow=rr;break}
+ }
 
-    const monthFromFilename=getMonthFromFilename(file.name);
+ if(dayRow<0){
+   alert("Encontré a Charles, pero no pude identificar la fila de fechas.");
+   return
+ }
 
-    if(monthFromFilename<0){
+ let y=2026,m=8,
+     text=rows.flat().filter(Boolean).join(" ").toUpperCase();
+ const mm=["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
 
-      alert(
-        "No pude identificar el mes en el nombre del archivo.\n\n"+
-        "El nombre debe contener al menos el nombre del mes, "+
-        "por ejemplo: AGOSTO, SEPTIEMBRE, OCTUBRE, etc."
-      );
+ for(let i=0;i<12;i++)if(text.includes(mm[i])){m=i;break}
+ const ym=text.match(/20\d{2}/);
+ if(ym)y=+ym[0];
 
-      return;
-    }
+ const sch={};
+ for(let col=0;col<rows[r].length;col++){
+   const d=rows[dayRow][col];
+   if(!(typeof d==="number"&&d>=1&&d<=31))continue;
+   const v=rows[r][col];
+   if(v==="L"||String(v).trim().toUpperCase()==="L")sch[d]="L";
+   else if(Number(v)===1)sch[d]=1;
+   else if(Number(v)===2)sch[d]=2;
+ }
 
-    /*
-      -------------------------------------------------------
-      2. LEEMOS EL EXCEL.
-      -------------------------------------------------------
-    */
-
-    const data=await file.arrayBuffer();
-
-    const book=XLSX.read(data,{
-      cellDates:true
-    });
-
-    /*
-      -------------------------------------------------------
-      3. BUSCAMOS A CHARLES EN TODAS LAS HOJAS.
-      -------------------------------------------------------
-    */
-
-    let found=null;
-    let sourceSheet="";
-
-    for(const sheetName of book.SheetNames){
-
-      const ws=book.Sheets[sheetName];
-
-      const rows=XLSX.utils.sheet_to_json(ws,{
-        header:1,
-        raw:true,
-        defval:null
-      });
-
-      const result=findCharles(rows);
-
-      if(result){
-
-        found=result;
-        sourceSheet=sheetName;
-
-        break;
-      }
-    }
-
-    if(!found){
-
-      alert(
-        "No encontré CHARLES PAREDES en este Excel.\n\n"+
-        "El archivo sí parece corresponder a un calendario, "+
-        "pero no pude localizar la fila de Charles."
-      );
-
-      return;
-    }
-
-    /*
-      -------------------------------------------------------
-      4. BUSCAMOS LA FILA DE LOS DÍAS.
-      -------------------------------------------------------
-    */
-
-    const dayInfo=findDayRow(
-      found.rows,
-      found.row
-    );
-
-    if(!dayInfo){
-
-      alert(
-        "Encontré a CHARLES PAREDES, pero no pude identificar "+
-        "correctamente la fila que contiene los días del mes."
-      );
-
-      return;
-    }
-
-    /*
-      -------------------------------------------------------
-      5. DETERMINAMOS EL AÑO.
-      
-      Primero buscamos un año en el nombre.
-      Si no existe, buscamos dentro del Excel.
-      Finalmente usamos el año actual como último recurso.
-      -------------------------------------------------------
-    */
-
-    let year=getYearFromText(file.name);
-
-    if(!year){
-
-      const allText=found.rows
-        .flat()
-        .filter(v=>v!==null && v!==undefined)
-        .map(v=>String(v))
-        .join(" ");
-
-      year=getYearFromText(allText);
-    }
-
-    if(!year){
-      year=new Date().getFullYear();
-    }
-
-    /*
-      -------------------------------------------------------
-      6. EXTRAEMOS LOS TURNOS DE CHARLES.
-      -------------------------------------------------------
-    */
-
-    const schedule=readCharlesSchedule(
-      found.rows,
-      found.row,
-      dayInfo
-    );
-
-    const importedDays=Object.keys(schedule).length;
-
-    if(importedDays===0){
-
-      alert(
-        "Encontré a CHARLES PAREDES y la fila de días, "+
-        "pero no encontré turnos válidos (1, 2 o L)."
-      );
-
-      return;
-    }
-
-    /*
-      -------------------------------------------------------
-      7. GUARDAMOS SOLO EL MES IMPORTADO.
-      
-      LOS DEMÁS MESES NO SE BORRAN.
-      -------------------------------------------------------
-    */
-
-    const monthKey=key(
-      year,
-      monthFromFilename
-    );
-
-    schedules={
-      ...schedules,
-      [monthKey]:schedule
-    };
-
-    /*
-      -------------------------------------------------------
-      8. GUARDAMOS TODO EN LOCALSTORAGE.
-      -------------------------------------------------------
-    */
-
-    save();
-
-    /*
-      -------------------------------------------------------
-      9. MOSTRAMOS EL MES RECIÉN IMPORTADO.
-      -------------------------------------------------------
-    */
-
-    current=new Date(
-      year,
-      monthFromFilename,
-      1
-    );
-
-    renderHome();
-    renderCalendar();
-    showView("calendar");
-
-    alert(
-      "Turnos importados correctamente.\n\n"+
-      "Mes: "+months[monthFromFilename]+" "+year+"\n"+
-      "Hoja: "+sourceSheet+"\n"+
-      "Días encontrados: "+importedDays+"\n\n"+
-      "Los demás meses guardados se conservaron."
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    alert(
-      "No fue posible interpretar este archivo Excel.\n\n"+
-      "Verifica que corresponda al formato utilizado por la empresa."
-    );
-  }
+ schedules[key(y,m)]=sch;
+ current=new Date(y,m,1);
+ save();
+ renderHome();
+ renderCalendar();
+ showView("calendar");
+ alert("Turnos importados correctamente para "+mm[m]+" "+y+".");
 }
 
-document.getElementById("load").onclick=()=>{
-  document.getElementById("file").click();
+document.getElementById("tabHome").onclick=()=>showView("home");
+document.getElementById("tabCalendar").onclick=()=>showView("calendar");
+
+document.getElementById("tabStats").onclick=()=>{
+ alert("Estadísticas: las activaremos en el siguiente paso.");
+};
+document.getElementById("tabReminders").onclick=()=>{
+ showView("calendar");
+ document.getElementById("settings").classList.add("open");
 };
 
+document.getElementById("prev").onclick=()=>{
+ current.setMonth(current.getMonth()-1);renderCalendar()
+};
+document.getElementById("next").onclick=()=>{
+ current.setMonth(current.getMonth()+1);renderCalendar()
+};
+document.getElementById("load").onclick=()=>document.getElementById("file").click();
 document.getElementById("file").onchange=e=>{
-
-  if(e.target.files[0]){
-    importExcel(e.target.files[0]);
-  }
-
-  e.target.value="";
+ if(e.target.files[0])importExcel(e.target.files[0]);
+ e.target.value=""
 };
+document.getElementById("reminders").onclick=()=>{
+ document.getElementById("settings").classList.toggle("open")
+};
+document.getElementById("enabled").onchange=save;
+document.getElementById("hour").onchange=save;
 
 populateHours();
 loadSaved();
 renderHome();
 renderCalendar();
 
-if("serviceWorker" in navigator){
-  navigator.serviceWorker
-    .register("sw.js")
-    .catch(()=>{});
-}
+if("serviceWorker" in navigator)
+ navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
 </html>
