@@ -617,6 +617,7 @@ select{
    DATOS INICIALES
    ========================================================= */
 
+<script>
 const defaultSchedule={
   "2026-09":{
     "1":1,"2":1,"3":"L","4":1,"5":1,"6":1,"7":"L",
@@ -635,50 +636,32 @@ const months=[
   "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
 ];
 
-const daysShort=[
-  "Dom","Lun","Mar","Mié","Jue","Vie","Sáb"
-];
-
-
-/* =========================================================
-   FUNCIONES GENERALES
-   ========================================================= */
+const daysShort=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 
 function key(y,m){
   return y+"-"+String(m+1).padStart(2,"0");
 }
 
 function shiftLabel(v){
-  return v===1 ? "Mañana" :
-         v===2 ? "Tarde" :
-         "Libre";
+  return v===1 ? "Mañana" : v===2 ? "Tarde" : "Libre";
 }
 
 function shiftClass(v){
-  return v===1 ? "morning" :
-         v===2 ? "afternoon" :
-         "free";
+  return v===1 ? "morning" : v===2 ? "afternoon" : "free";
 }
 
 function sunSvg(){
   return `<svg viewBox="0 0 120 120" fill="none">
     <circle cx="60" cy="60" r="23" fill="#ffbe22"/>
     <circle cx="53" cy="52" r="5" fill="#ffd95a"/>
-    <path d="M60 10v16M60 94v16M10 60h16M94 60h16M24.6 24.6l11.3 11.3M84.1 84.1l11.3 11.3M95.4 24.6 84.1 35.9M35.9 84.1 24.6 95.4"
-      stroke="#f4a51c"
-      stroke-width="6"
-      stroke-linecap="round"/>
+    <path d="M60 10v16M60 94v16M10 60h16M94 60h16M24.6 24.6l11.3 11.3M84.1 84.1l11.3 11.3M95.4 24.6 84.1 35.9M35.9 84.1 24.6 95.4" stroke="#f4a51c" stroke-width="6" stroke-linecap="round"/>
   </svg>`;
 }
 
 function moonSvg(){
   return `<svg viewBox="0 0 120 120" fill="none">
-    <path d="M78 13c-20 9-31 27-31 48 0 22 14 39 35 46-6 2-12 3-18 3-28 0-51-22-51-50S36 10 64 10c5 0 10 1 14 3z"
-      fill="#ffd331"/>
-    <path d="M86 20c-7 4-13 9-17 16"
-      stroke="#ffe06b"
-      stroke-width="4"
-      stroke-linecap="round"/>
+    <path d="M78 13c-20 9-31 27-31 48 0 22 14 39 35 46-6 2-12 3-18 3-28 0-51-22-51-50S36 10 64 10c5 0 10 1 14 3z" fill="#ffd331"/>
+    <path d="M86 20c-7 4-13 9-17 16" stroke="#ffe06b" stroke-width="4" stroke-linecap="round"/>
   </svg>`;
 }
 
@@ -686,10 +669,7 @@ function sofaSvg(){
   return `<svg viewBox="0 0 120 100" fill="none">
     <path d="M20 58h80v20H20z" fill="#238bd0"/>
     <path d="M28 48c0-8 7-14 15-14h34c8 0 15 6 15 14v10H28z" fill="#2ba2df"/>
-    <path d="M18 61v18M102 61v18M27 78v10M93 78v10"
-      stroke="#2374a8"
-      stroke-width="6"
-      stroke-linecap="round"/>
+    <path d="M18 61v18M102 61v18M27 78v10M93 78v10" stroke="#2374a8" stroke-width="6" stroke-linecap="round"/>
     <path d="M91 10h4v25h-4z" fill="#d99b2b"/>
     <path d="M78 10c0-7 6-10 15-10s15 3 15 10v4H78z" fill="#ffd22e"/>
     <path d="M80 14h26" stroke="#f0a900" stroke-width="3"/>
@@ -700,223 +680,127 @@ function formatDate(dt){
   return daysShort[dt.getDay()]+" "+dt.getDate()+" de "+months[dt.getMonth()];
 }
 
-
-/* =========================================================
-   DATOS DESDE HOY
-   ========================================================= */
-
 function allDaysFromToday(){
-
-  const out=[];
-  const now=new Date();
-
+  const out=[],now=new Date();
   now.setHours(0,0,0,0);
 
   for(let i=0;i<370;i++){
-
     const dt=new Date(now);
-
     dt.setDate(now.getDate()+i);
 
-    const sch=
-      schedules[key(dt.getFullYear(),dt.getMonth())] || {};
-
+    const sch=schedules[key(dt.getFullYear(),dt.getMonth())]||{};
     const v=sch[dt.getDate()];
 
-    if(v!==undefined){
-      out.push({dt,v});
-    }
+    if(v!==undefined) out.push({dt,v});
   }
 
   return out;
 }
 
-
-/* =========================================================
-   PANTALLA INICIO
-   ========================================================= */
-
 function renderHome(){
-
   const now=new Date();
-
   now.setHours(0,0,0,0);
 
-  const sch=
-    schedules[key(now.getFullYear(),now.getMonth())] || {};
-
+  const sch=schedules[key(now.getFullYear(),now.getMonth())]||{};
   const today=sch[now.getDate()];
 
   const circle=document.getElementById("todayCircle");
   const status=document.getElementById("todayStatus");
 
-  document.getElementById("todayDate").textContent=
-    formatDate(now);
+  document.getElementById("todayDate").textContent=formatDate(now);
 
-  circle.className=
-    "shift-circle "+shiftClass(today);
+  circle.className="shift-circle "+shiftClass(today);
 
-  if(today===1){
-    circle.innerHTML=sunSvg();
-  }else if(today===2){
+  if(today===1 || today===2){
     circle.innerHTML=sunSvg();
   }else{
     circle.innerHTML=sofaSvg();
   }
 
-  status.className=
-    "today-status "+shiftClass(today);
-
-  status.textContent=
-    shiftLabel(today).toUpperCase();
+  status.className="today-status "+shiftClass(today);
+  status.textContent=shiftLabel(today).toUpperCase();
 
   document.getElementById("todayMessage").textContent=
-    today===undefined
-      ? "Sin turno cargado para hoy"
-      : today===1
-        ? "¡Buen turno!"
-        : today===2
-          ? "¡Buen turno!"
-          : "¡A disfrutar tu día!";
+    today===undefined ? "Sin turno cargado para hoy" :
+    today===1 ? "¡Buen turno!" :
+    today===2 ? "¡Buen turno!" :
+    "¡A disfrutar tu día!";
 
-  const future=
-    allDaysFromToday().filter(
-      x=>x.dt.getTime()>now.getTime()
-    );
+  const future=allDaysFromToday().filter(
+    x=>x.dt.getTime()>now.getTime()
+  );
 
-  const ns=
-    future.find(x=>x.v===1||x.v===2);
-
-  const nf=
-    future.find(x=>x.v==="L");
+  const ns=future.find(x=>x.v===1||x.v===2);
+  const nf=future.find(x=>x.v==="L");
 
   document.getElementById("nextShiftDate").textContent=
     ns ? formatDate(ns.dt) : "Sin datos";
 
   document.getElementById("nextShiftIcon").innerHTML=
-    ns
-      ? (ns.v===1 ? sunSvg() : moonSvg())
-      : "";
+    ns ? (ns.v===1 ? sunSvg() : moonSvg()) : "";
 
-  const type=
-    document.getElementById("nextShiftType");
+  const type=document.getElementById("nextShiftType");
 
-  type.textContent=
-    ns ? shiftLabel(ns.v) : "";
-
-  type.className=
-    "quick-type "+(ns ? shiftClass(ns.v) : "");
+  type.textContent=ns ? shiftLabel(ns.v) : "";
+  type.className="quick-type "+(ns ? shiftClass(ns.v) : "");
 
   document.getElementById("nextFreeDate").textContent=
     nf ? formatDate(nf.dt) : "Sin datos";
 
-  const days=
-    nf
-      ? Math.round((nf.dt-now)/86400000)
-      : null;
+  const days=nf ? Math.round((nf.dt-now)/86400000) : null;
 
   document.getElementById("nextFreeCountdown").textContent=
-    nf
-      ? (days===1 ? "En 1 día" : "En "+days+" días")
-      : "";
+    nf ? (days===1 ? "En 1 día" : "En "+days+" días") : "";
 }
 
-
-/* =========================================================
-   CALENDARIO
-   ========================================================= */
-
 function renderCalendar(){
-
   const y=current.getFullYear();
   const m=current.getMonth();
-
   const k=key(y,m);
 
-  document.getElementById("month").textContent=
-    months[m]+" "+y;
+  document.getElementById("month").textContent=months[m]+" "+y;
 
   const grid=document.getElementById("grid");
-
   grid.innerHTML="";
 
-  const start=
-    (new Date(y,m,1).getDay()+6)%7;
-
-  const days=
-    new Date(y,m+1,0).getDate();
-
-  const sch=
-    schedules[k] || {};
+  const start=(new Date(y,m,1).getDay()+6)%7;
+  const days=new Date(y,m+1,0).getDate();
+  const sch=schedules[k]||{};
 
   for(let i=0;i<start;i++){
-
     const e=document.createElement("div");
-
     e.className="empty";
-
     grid.appendChild(e);
   }
 
   for(let d=1;d<=days;d++){
-
     const dt=new Date(y,m,d);
-
-    const dow=
-      (dt.getDay()+6)%7;
-
+    const dow=(dt.getDay()+6)%7;
     const v=sch[d];
 
-    let cls=
-      "day"+(dow>=5 ? " weekend":"");
+    let cls="day"+(dow>=5 ? " weekend":"");
 
-    if(v===1){
-      cls+=" shift1";
-    }
-
-    if(v===2){
-      cls+=" shift2";
-    }
-
-    if(v==="L"){
-      cls+=" free";
-    }
+    if(v===1) cls+=" shift1";
+    if(v===2) cls+=" shift2";
+    if(v==="L") cls+=" free";
 
     const e=document.createElement("div");
-
     e.className=cls;
-
-    e.innerHTML=
-      '<div class="num">'+d+"</div>";
+    e.innerHTML='<div class="num">'+d+"</div>";
 
     grid.appendChild(e);
   }
 }
 
-
-/* =========================================================
-   NAVEGACIÓN
-   ========================================================= */
-
 function showView(name){
+  const home=name==="home";
+  const calendar=!home;
 
-  const home=
-    name==="home";
+  document.getElementById("homeView").classList.toggle("active",home);
+  document.getElementById("calendarView").classList.toggle("active",calendar);
 
-  const calendar=
-    !home;
-
-  document.getElementById("homeView")
-    .classList.toggle("active",home);
-
-  document.getElementById("calendarView")
-    .classList.toggle("active",calendar);
-
-  document.getElementById("tabHome")
-    .classList.toggle("active",home);
-
-  document.getElementById("tabCalendar")
-    .classList.toggle("active",calendar);
+  document.getElementById("tabHome").classList.toggle("active",home);
+  document.getElementById("tabCalendar").classList.toggle("active",calendar);
 
   if(home){
     renderHome();
@@ -924,78 +808,52 @@ function showView(name){
     renderCalendar();
   }
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
-document.getElementById("tabHome").onclick=
-  ()=>showView("home");
+document.getElementById("tabHome").onclick=()=>{
+  showView("home");
+};
 
-document.getElementById("tabCalendar").onclick=
-  ()=>showView("calendar");
+document.getElementById("tabCalendar").onclick=()=>{
+  showView("calendar");
+};
 
-document.getElementById("tabStats").onclick=
-  ()=>{
-    alert(
-      "La sección Estadísticas se incorporará en el siguiente paso."
-    );
-  };
+document.getElementById("tabStats").onclick=()=>{
+  alert("La sección Estadísticas se incorporará en el siguiente paso.");
+};
 
-document.getElementById("tabReminders").onclick=
-  ()=>{
-    showView("calendar");
+document.getElementById("tabReminders").onclick=()=>{
+  showView("calendar");
 
-    document.getElementById("settings")
-      .classList.add("open");
+  document.getElementById("settings").classList.add("open");
 
-    window.setTimeout(()=>{
-      document.getElementById("settings")
-        .scrollIntoView({
-          behavior:"smooth",
-          block:"center"
-        });
-    },80);
-  };
+  window.setTimeout(()=>{
+    document.getElementById("settings").scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+  },80);
+};
 
-document.getElementById("prev").onclick=
-  ()=>{
-    current.setMonth(
-      current.getMonth()-1
-    );
+document.getElementById("prev").onclick=()=>{
+  current.setMonth(current.getMonth()-1);
+  renderCalendar();
+};
 
-    renderCalendar();
-  };
-
-document.getElementById("next").onclick=
-  ()=>{
-    current.setMonth(
-      current.getMonth()+1
-    );
-
-    renderCalendar();
-  };
-
-
-/* =========================================================
-   RECORDATORIOS / AJUSTES
-   ========================================================= */
+document.getElementById("next").onclick=()=>{
+  current.setMonth(current.getMonth()+1);
+  renderCalendar();
+};
 
 function populateHours(){
-
-  const s=
-    document.getElementById("hour");
+  const s=document.getElementById("hour");
 
   for(let h=0;h<24;h++){
-
-    const o=
-      document.createElement("option");
+    const o=document.createElement("option");
 
     o.value=h;
-
-    o.textContent=
-      String(h).padStart(2,"0")+":00";
+    o.textContent=String(h).padStart(2,"0")+":00";
 
     s.appendChild(o);
   }
@@ -1004,9 +862,7 @@ function populateHours(){
 }
 
 function save(){
-
   try{
-
     localStorage.setItem(
       "turnosSchedules",
       JSON.stringify(schedules)
@@ -1015,462 +871,410 @@ function save(){
     localStorage.setItem(
       "turnosReminder",
       JSON.stringify({
-        enabled:
-          document.getElementById("enabled").checked,
-
-        hour:
-          +document.getElementById("hour").value
+        enabled:document.getElementById("enabled").checked,
+        hour:+document.getElementById("hour").value
       })
     );
-
   }catch(e){}
 }
 
 function loadSaved(){
-
   try{
-
-    const a=
-      localStorage.getItem("turnosSchedules");
-
-    const b=
-      localStorage.getItem("turnosReminder");
+    const a=localStorage.getItem("turnosSchedules");
+    const b=localStorage.getItem("turnosReminder");
 
     if(a){
       schedules=JSON.parse(a);
     }
 
     if(b){
-
       const x=JSON.parse(b);
 
-      document.getElementById("enabled")
-        .checked=!!x.enabled;
-
-      document.getElementById("hour")
-        .value=x.hour??20;
+      document.getElementById("enabled").checked=!!x.enabled;
+      document.getElementById("hour").value=x.hour??20;
     }
-
   }catch(e){}
 }
 
-document.getElementById("settingsBtn").onclick=
-  ()=>{
-    showView("calendar");
+document.getElementById("settingsBtn").onclick=()=>{
+  showView("calendar");
+  document.getElementById("settings").classList.add("open");
+};
 
-    document.getElementById("settings")
-      .classList.add("open");
-  };
+document.getElementById("reminders").onclick=()=>{
+  document.getElementById("settings").classList.toggle("open");
+};
 
-document.getElementById("reminders").onclick=
-  ()=>{
-    document.getElementById("settings")
-      .classList.toggle("open");
-  };
-
-document.getElementById("enabled").onchange=
-  save;
-
-document.getElementById("hour").onchange=
-  save;
+document.getElementById("enabled").onchange=save;
+document.getElementById("hour").onchange=save;
 
 
 /* =========================================================
-   IMPORTACIÓN DE EXCEL
-   =========================================================
-   
-   ESTA ES LA ÚNICA FUNCIÓN importExcel().
-   
-   No modifica el diseño.
-   No modifica la navegación.
-   Solo interpreta el Excel y actualiza schedules.
+   IMPORTACIÓN FLEXIBLE DE EXCEL
    ========================================================= */
+
+function normalizeText(value){
+  return String(value??"")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .trim()
+    .toUpperCase();
+}
+
+function getMonthFromFilename(filename){
+
+  const text=normalizeText(filename);
+
+  const aliases={
+    ENERO:["ENERO","ENE"],
+    FEBRERO:["FEBRERO","FEB"],
+    MARZO:["MARZO","MAR"],
+    ABRIL:["ABRIL","ABR"],
+    MAYO:["MAYO","MAY"],
+    JUNIO:["JUNIO","JUN"],
+    JULIO:["JULIO","JUL"],
+    AGOSTO:["AGOSTO","AGO"],
+    SEPTIEMBRE:["SEPTIEMBRE","SEPTIEMBRE","SEP","SETIEMBRE","SET"],
+    OCTUBRE:["OCTUBRE","OCT"],
+    NOVIEMBRE:["NOVIEMBRE","NOV"],
+    DICIEMBRE:["DICIEMBRE","DIC"]
+  };
+
+  for(let i=0;i<months.length;i++){
+
+    const name=normalizeText(months[i]);
+    const list=aliases[name]||[name];
+
+    for(const alias of list){
+
+      const pattern=new RegExp(
+        "(^|[^A-Z])"+alias+"([^A-Z]|$)"
+      );
+
+      if(pattern.test(text)){
+        return i;
+      }
+    }
+  }
+
+  return -1;
+}
+
+function getYearFromText(text){
+
+  const match=String(text||"").match(/\b(20\d{2})\b/);
+
+  return match ? Number(match[1]) : null;
+}
+
+function findCharles(rows){
+
+  for(let r=0;r<rows.length;r++){
+
+    for(let c=0;c<rows[r].length;c++){
+
+      const value=normalizeText(rows[r][c]);
+
+      if(value==="CHARLES PAREDES"){
+        return {
+          rows,
+          row:r,
+          col:c
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+function findDayRow(rows,charlesRow){
+
+  let best=null;
+
+  const start=Math.max(0,charlesRow-8);
+
+  for(let r=start;r<charlesRow;r++){
+
+    const row=rows[r]||[];
+
+    const positions=[];
+    const seen=new Set();
+
+    for(let c=0;c<row.length;c++){
+
+      const value=row[c];
+
+      if(typeof value==="number" &&
+         Number.isInteger(value) &&
+         value>=1 &&
+         value<=31){
+
+        if(!seen.has(value)){
+          seen.add(value);
+          positions.push({
+            col:c,
+            day:value
+          });
+        }
+      }
+    }
+
+    if(positions.length<7) continue;
+
+    let score=positions.length;
+
+    if(seen.has(1)) score+=10;
+    if(seen.has(31)) score+=5;
+
+    if(!best || score>best.score){
+      best={
+        row:r,
+        positions,
+        score
+      };
+    }
+  }
+
+  return best;
+}
+
+function readCharlesSchedule(rows,charlesRow,dayInfo){
+
+  const schedule={};
+  const charles=rows[charlesRow]||[];
+
+  for(const item of dayInfo.positions){
+
+    const day=item.day;
+    const value=charles[item.col];
+
+    if(value===null || value===undefined) continue;
+
+    const normalized=normalizeText(value);
+
+    if(normalized==="L"){
+      schedule[day]="L";
+      continue;
+    }
+
+    const number=Number(value);
+
+    if(number===1){
+      schedule[day]=1;
+    }else if(number===2){
+      schedule[day]=2;
+    }
+  }
+
+  return schedule;
+}
 
 async function importExcel(file){
 
   if(!window.XLSX){
-
     alert(
       "La biblioteca para leer Excel no está disponible. "+
       "Conéctate a internet y vuelve a intentarlo."
     );
-
     return;
   }
 
   try{
 
-    /* -----------------------------------------------
-       1. Leer archivo
-       ----------------------------------------------- */
+    /*
+      -------------------------------------------------------
+      1. EL MES SE BUSCA PRIMERO EN EL NOMBRE DEL ARCHIVO.
+      -------------------------------------------------------
+    */
 
-    const data=
-      await file.arrayBuffer();
+    const monthFromFilename=getMonthFromFilename(file.name);
 
-    const book=
-      XLSX.read(data,{
-        cellDates:true
-      });
+    if(monthFromFilename<0){
 
+      alert(
+        "No pude identificar el mes en el nombre del archivo.\n\n"+
+        "El nombre debe contener al menos el nombre del mes, "+
+        "por ejemplo: AGOSTO, SEPTIEMBRE, OCTUBRE, etc."
+      );
 
-    /* -----------------------------------------------
-       2. Buscar exclusivamente CHARLES PAREDES
-       ----------------------------------------------- */
-
-    let found=null;
-
-    for(const name of book.SheetNames){
-
-      const ws=
-        book.Sheets[name];
-
-      const rows=
-        XLSX.utils.sheet_to_json(ws,{
-          header:1,
-          raw:true,
-          defval:null
-        });
-
-      for(let r=0;r<rows.length;r++){
-
-        for(let c=0;c<rows[r].length;c++){
-
-          const value=
-            String(
-              rows[r][c] ?? ""
-            )
-            .trim()
-            .toUpperCase();
-
-          if(value==="CHARLES PAREDES"){
-
-            found={
-              rows,
-              r,
-              c,
-              sheet:name
-            };
-
-            break;
-          }
-        }
-
-        if(found) break;
-      }
-
-      if(found) break;
+      return;
     }
 
+    /*
+      -------------------------------------------------------
+      2. LEEMOS EL EXCEL.
+      -------------------------------------------------------
+    */
+
+    const data=await file.arrayBuffer();
+
+    const book=XLSX.read(data,{
+      cellDates:true
+    });
+
+    /*
+      -------------------------------------------------------
+      3. BUSCAMOS A CHARLES EN TODAS LAS HOJAS.
+      -------------------------------------------------------
+    */
+
+    let found=null;
+    let sourceSheet="";
+
+    for(const sheetName of book.SheetNames){
+
+      const ws=book.Sheets[sheetName];
+
+      const rows=XLSX.utils.sheet_to_json(ws,{
+        header:1,
+        raw:true,
+        defval:null
+      });
+
+      const result=findCharles(rows);
+
+      if(result){
+
+        found=result;
+        sourceSheet=sheetName;
+
+        break;
+      }
+    }
 
     if(!found){
 
       alert(
-        "No encontré CHARLES PAREDES en este Excel."
+        "No encontré CHARLES PAREDES en este Excel.\n\n"+
+        "El archivo sí parece corresponder a un calendario, "+
+        "pero no pude localizar la fila de Charles."
       );
 
       return;
     }
 
+    /*
+      -------------------------------------------------------
+      4. BUSCAMOS LA FILA DE LOS DÍAS.
+      -------------------------------------------------------
+    */
 
-    const {
-      rows,
-      r,
-      c
-    }=found;
+    const dayInfo=findDayRow(
+      found.rows,
+      found.row
+    );
 
-
-    /* -----------------------------------------------
-       3. Encontrar la fila de días
-       
-       Buscamos hacia arriba desde Charles.
-       Se exige encontrar varias celdas numéricas
-       correspondientes a días.
-       ----------------------------------------------- */
-
-    let dayRow=-1;
-
-    for(
-      let rr=r-1;
-      rr>=Math.max(0,r-5);
-      rr--
-    ){
-
-      let validDays=0;
-
-      for(
-        let cc=c;
-        cc<rows[rr].length;
-        cc++
-      ){
-
-        const value=
-          rows[rr][cc];
-
-        if(
-          typeof value==="number" &&
-          Number.isInteger(value) &&
-          value>=1 &&
-          value<=31
-        ){
-
-          validDays++;
-        }
-      }
-
-      if(validDays>=7){
-
-        dayRow=rr;
-
-        break;
-      }
-    }
-
-
-    if(dayRow<0){
+    if(!dayInfo){
 
       alert(
-        "Encontré a Charles, pero no pude identificar "+
-        "la fila de fechas."
+        "Encontré a CHARLES PAREDES, pero no pude identificar "+
+        "correctamente la fila que contiene los días del mes."
       );
 
       return;
     }
 
+    /*
+      -------------------------------------------------------
+      5. DETERMINAMOS EL AÑO.
+      
+      Primero buscamos un año en el nombre.
+      Si no existe, buscamos dentro del Excel.
+      Finalmente usamos el año actual como último recurso.
+      -------------------------------------------------------
+    */
 
-    /* -----------------------------------------------
-       4. Detectar mes y año
-       
-       Revisamos las primeras filas de la misma hoja.
-       ----------------------------------------------- */
+    let year=getYearFromText(file.name);
 
-    let y=null;
-    let m=null;
+    if(!year){
 
-    const monthNames=[
-      "ENERO",
-      "FEBRERO",
-      "MARZO",
-      "ABRIL",
-      "MAYO",
-      "JUNIO",
-      "JULIO",
-      "AGOSTO",
-      "SEPTIEMBRE",
-      "OCTUBRE",
-      "NOVIEMBRE",
-      "DICIEMBRE"
-    ];
+      const allText=found.rows
+        .flat()
+        .filter(v=>v!==null && v!==undefined)
+        .map(v=>String(v))
+        .join(" ");
 
-
-    for(
-      let rr=0;
-      rr<Math.min(dayRow,12);
-      rr++
-    ){
-
-      const line=
-        rows[rr]
-          .filter(
-            v=>
-              v!==null &&
-              v!==undefined &&
-              String(v).trim()!==""
-          )
-          .map(
-            v=>
-              String(v)
-                .trim()
-                .toUpperCase()
-          )
-          .join(" ");
-
-      if(!line) continue;
-
-
-      const yearMatch=
-        line.match(/20\d{2}/);
-
-      if(
-        yearMatch &&
-        y===null
-      ){
-
-        y=
-          Number(yearMatch[0]);
-      }
-
-
-      for(
-        let i=0;
-        i<monthNames.length;
-        i++
-      ){
-
-        if(
-          line.includes(monthNames[i])
-        ){
-
-          m=i;
-
-          break;
-        }
-      }
-
-
-      if(
-        y!==null &&
-        m!==null
-      ){
-
-        break;
-      }
+      year=getYearFromText(allText);
     }
 
+    if(!year){
+      year=new Date().getFullYear();
+    }
 
-    if(
-      y===null ||
-      m===null
-    ){
+    /*
+      -------------------------------------------------------
+      6. EXTRAEMOS LOS TURNOS DE CHARLES.
+      -------------------------------------------------------
+    */
+
+    const schedule=readCharlesSchedule(
+      found.rows,
+      found.row,
+      dayInfo
+    );
+
+    const importedDays=Object.keys(schedule).length;
+
+    if(importedDays===0){
 
       alert(
-        "Encontré la tabla de Charles, pero no pude "+
-        "determinar con seguridad el mes y año del Excel."
+        "Encontré a CHARLES PAREDES y la fila de días, "+
+        "pero no encontré turnos válidos (1, 2 o L)."
       );
 
       return;
     }
 
+    /*
+      -------------------------------------------------------
+      7. GUARDAMOS SOLO EL MES IMPORTADO.
+      
+      LOS DEMÁS MESES NO SE BORRAN.
+      -------------------------------------------------------
+    */
 
-    /* -----------------------------------------------
-       5. Interpretar únicamente la fila de Charles
-       
-       1 = mañana
-       2 = tarde
-       L = libre
-       ----------------------------------------------- */
-
-    const sch={};
-
-    for(
-      let col=c;
-      col<rows[dayRow].length;
-      col++
-    ){
-
-      const dayValue=
-        rows[dayRow][col];
-
-
-      if(
-        !(
-          typeof dayValue==="number" &&
-          Number.isInteger(dayValue) &&
-          dayValue>=1 &&
-          dayValue<=31
-        )
-      ){
-
-        continue;
-      }
-
-
-      const day=
-        Math.floor(dayValue);
-
-      const value=
-        rows[r][col];
-
-
-      if(
-        value===null ||
-        value===undefined
-      ){
-
-        continue;
-      }
-
-
-      const normalized=
-        String(value)
-          .trim()
-          .toUpperCase();
-
-
-      if(normalized==="L"){
-
-        sch[day]="L";
-
-      }else if(
-        Number(value)===1
-      ){
-
-        sch[day]=1;
-
-      }else if(
-        Number(value)===2
-      ){
-
-        sch[day]=2;
-      }
-    }
-
-
-    /* -----------------------------------------------
-       6. Guardar SOLO el mes importado
-       
-       Los demás meses permanecen.
-       
-       Ejemplo:
-       
-       Septiembre existente
-       +
-       Octubre importado
-       =
-       Septiembre + Octubre
-       
-       Si Octubre ya existe:
-       Octubre se actualiza.
-       ----------------------------------------------- */
-
-    const monthKey=
-      key(y,m);
+    const monthKey=key(
+      year,
+      monthFromFilename
+    );
 
     schedules={
       ...schedules,
-      [monthKey]:sch
+      [monthKey]:schedule
     };
 
-
-    /* -----------------------------------------------
-       7. Persistir todos los meses
-       ----------------------------------------------- */
+    /*
+      -------------------------------------------------------
+      8. GUARDAMOS TODO EN LOCALSTORAGE.
+      -------------------------------------------------------
+    */
 
     save();
 
+    /*
+      -------------------------------------------------------
+      9. MOSTRAMOS EL MES RECIÉN IMPORTADO.
+      -------------------------------------------------------
+    */
 
-    /* -----------------------------------------------
-       8. Mostrar inmediatamente el mes importado
-       ----------------------------------------------- */
-
-    current=
-      new Date(y,m,1);
+    current=new Date(
+      year,
+      monthFromFilename,
+      1
+    );
 
     renderHome();
     renderCalendar();
-
     showView("calendar");
 
-
-    /* -----------------------------------------------
-       9. Confirmación
-       ----------------------------------------------- */
-
     alert(
-      "Turnos importados correctamente para "+
-      monthNames[m]+" "+y+".\n\n"+
+      "Turnos importados correctamente.\n\n"+
+      "Mes: "+months[monthFromFilename]+" "+year+"\n"+
+      "Hoja: "+sourceSheet+"\n"+
+      "Días encontrados: "+importedDays+"\n\n"+
       "Los demás meses guardados se conservaron."
     );
-
 
   }catch(error){
 
@@ -1483,59 +1287,29 @@ async function importExcel(file){
   }
 }
 
+document.getElementById("load").onclick=()=>{
+  document.getElementById("file").click();
+};
 
-/* =========================================================
-   BOTÓN CARGAR EXCEL
-   ========================================================= */
+document.getElementById("file").onchange=e=>{
 
-document.getElementById("load").onclick=
-  ()=>{
-    document.getElementById("file").click();
-  };
+  if(e.target.files[0]){
+    importExcel(e.target.files[0]);
+  }
 
-document.getElementById("file").onchange=
-  e=>{
-
-    if(e.target.files[0]){
-
-      importExcel(
-        e.target.files[0]
-      );
-    }
-
-    /*
-      Permite volver a seleccionar el mismo archivo
-      posteriormente.
-    */
-
-    e.target.value="";
-  };
-
-
-/* =========================================================
-   INICIALIZACIÓN
-   ========================================================= */
+  e.target.value="";
+};
 
 populateHours();
-
 loadSaved();
-
 renderHome();
-
 renderCalendar();
 
-
-/* =========================================================
-   SERVICE WORKER
-   ========================================================= */
-
 if("serviceWorker" in navigator){
-
   navigator.serviceWorker
     .register("sw.js")
     .catch(()=>{});
 }
-
 </script>
 </body>
 </html>
