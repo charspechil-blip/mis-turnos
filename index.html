@@ -953,25 +953,7 @@ function getMonthFromFilename(filename){
   return -1;
 }
 
-  for(let i=0;i<months.length;i++){
-
-    const name=normalizeText(months[i]);
-    const list=aliases[name]||[name];
-
-    for(const alias of list){
-
-      const pattern=new RegExp(
-        "(^|[^A-Z])"+alias+"([^A-Z]|$)"
-      );
-
-      if(pattern.test(text)){
-        return i;
-      }
-    }
-  }
-
-  return -1;
-}
+  
 
 function getYearFromText(text){
 
