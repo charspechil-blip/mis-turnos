@@ -924,20 +924,34 @@ function getMonthFromFilename(filename){
 
   const text=normalizeText(filename);
 
-  const aliases={
-    ENERO:["ENERO","ENE"],
-    FEBRERO:["FEBRERO","FEB"],
-    MARZO:["MARZO","MAR"],
-    ABRIL:["ABRIL","ABR"],
-    MAYO:["MAYO","MAY"],
-    JUNIO:["JUNIO","JUN"],
-    JULIO:["JULIO","JUL"],
-    AGOSTO:["AGOSTO","AGO"],
-    SEPTIEMBRE:["SEPTIEMBRE","SEPTIEMBRE","SEP","SETIEMBRE","SET"],
-    OCTUBRE:["OCTUBRE","OCT"],
-    NOVIEMBRE:["NOVIEMBRE","NOV"],
-    DICIEMBRE:["DICIEMBRE","DIC"]
-  };
+  const monthAliases=[
+    ["ENERO","ENE"],
+    ["FEBRERO","FEB"],
+    ["MARZO","MAR"],
+    ["ABRIL","ABR"],
+    ["MAYO","MAY"],
+    ["JUNIO","JUN"],
+    ["JULIO","JUL"],
+    ["AGOSTO","AGO"],
+    ["SEPTIEMBRE","SEPT","SEP","SETIEMBRE","SET"],
+    ["OCTUBRE","OCT"],
+    ["NOVIEMBRE","NOV"],
+    ["DICIEMBRE","DIC"]
+  ];
+
+  for(let i=0;i<monthAliases.length;i++){
+
+    for(const alias of monthAliases[i]){
+
+      if(text.includes(alias)){
+        return i;
+      }
+
+    }
+  }
+
+  return -1;
+}
 
   for(let i=0;i<months.length;i++){
 
