@@ -169,6 +169,30 @@ button{font:inherit}
   padding:13px 15px;margin-top:12px;font-size:14px;font-weight:800;cursor:pointer;
 }
 
+/* Consulta de turno futuro */
+.future-card{
+  margin-top:18px;border:1px solid var(--line);border-radius:23px;
+  padding:20px 16px 17px;background:#fff;
+}
+.future-title{font-size:20px;font-weight:850;line-height:1.1}
+.future-subtitle{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.35}
+.future-controls{display:grid;grid-template-columns:1fr auto;gap:9px;margin-top:14px}
+.future-date{width:100%;min-height:48px;border:1px solid var(--line);border-radius:13px;
+  padding:8px 10px;background:#fff;color:var(--text);font-size:16px}
+.future-button{border:0;border-radius:13px;padding:0 15px;background:var(--free);
+  color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.future-result{display:none;margin-top:13px;border-radius:15px;padding:14px;background:#f7f8f7}
+.future-result.show{display:block}
+.future-result.estimated{background:#eef6ff;border:1px solid #dcecff}
+.future-result.confirmed,.future-result.free-result{background:#eaf8f0;border:1px solid #d7f0e2}
+.future-result-title{font-size:12px;font-weight:800;color:var(--muted)}
+.future-result-main{margin-top:4px;font-size:25px;font-weight:900;line-height:1.05}
+.future-result-main.morning{color:var(--morning)}
+.future-result-main.afternoon{color:var(--afternoon)}
+.future-result-main.free{color:var(--free)}
+.future-result-note{margin-top:9px;font-size:12px;line-height:1.4;color:#666}
+.future-result-note strong{color:var(--text)}
+
 /* Calendario */
 header.calendar-header{
   display:flex;align-items:center;justify-content:space-between;gap:10px
@@ -294,6 +318,11 @@ select{
  .primary-cta{font-size:19px;padding:16px}
  .tab{font-size:12px;min-height:69px}
  .worker-menu{margin-top:-4px;margin-bottom:12px}
+ .future-card{padding:18px 12px 15px;border-radius:20px}
+ .future-title{font-size:18px}
+ .future-controls{grid-template-columns:1fr;margin-top:12px}
+ .future-button{min-height:46px}
+ .future-result-main{font-size:22px}
 }
 @media(max-width:350px){
  .app-title h1{font-size:23px}
@@ -360,6 +389,23 @@ select{
       <div id="nextFreeCountdown" class="quick-countdown"></div>
     </div>
   </div>
+
+  <section class="future-card" aria-labelledby="futureTitle">
+    <div id="futureTitle" class="future-title">🔮 Consultar turno futuro</div>
+    <div class="future-subtitle">
+      Consulta una fecha futura. Si ese mes aún no tiene Excel cargado,
+      la app calculará un <strong>turno estimado</strong> según la rotación semanal.
+    </div>
+    <div class="future-controls">
+      <input id="futureDate" class="future-date" type="date" value="2026-12-24">
+      <button id="futureButton" class="future-button" type="button">Consultar</button>
+    </div>
+    <div id="futureResult" class="future-result" aria-live="polite">
+      <div id="futureResultTitle" class="future-result-title"></div>
+      <div id="futureResultMain" class="future-result-main"></div>
+      <div id="futureResultNote" class="future-result-note"></div>
+    </div>
+  </section>
 </section>
 
 <section id="calendarView" class="view">
@@ -798,6 +844,178 @@ function renderCalendar(){
 
     grid.appendChild(e);
   }
+}
+
+/* =========================================================
+   CONSULTA DE TURNO FUTURO
+   ========================================================= */
+
+function getActualShiftForDate(dt){
+  const sch=getWorkerSchedule(key(dt.getFullYear(),dt.getMonth()));
+  const value=sch[dt.getDate()];
+  return value===undefined ? undefined : value;
+}
+
+function mondayOfWeek(dt){
+  const d=new Date(dt);
+  d.setHours(0,0,0,0);
+  const day=d.getDay();
+  d.setDate(d.getDate()+(day===0 ? -6 : 1-day));
+  return d;
+}
+
+function weeksBetween(a,b){
+  return Math.floor((mondayOfWeek(b)-mondayOfWeek(a))/604800000);
+}
+
+/*
+  Busca la última semana real anterior en la que el trabajador
+  tenga turno 1 o 2. Esa semana es el ancla de la rotación.
+*/
+function findRotationAnchor(targetDate){
+  let latest=null;
+
+  for(const monthKey of Object.keys(schedules)){
+    const sch=getWorkerSchedule(monthKey);
+    if(!sch || typeof sch!=="object")continue;
+
+    const parts=monthKey.split("-");
+    const y=Number(parts[0]);
+    const m=Number(parts[1])-1;
+    const days=new Date(y,m+1,0).getDate();
+
+    for(let d=1;d<=days;d++){
+      const value=sch[d];
+      if(value!==1 && value!==2)continue;
+
+      const dt=new Date(y,m,d);
+      dt.setHours(0,0,0,0);
+
+      if(dt>=targetDate)continue;
+
+      if(!latest || dt>latest.date){
+        latest={date:dt,value:value};
+      }
+    }
+  }
+
+  return latest;
+}
+
+function forecastShift(targetDate){
+  const anchor=findRotationAnchor(targetDate);
+  if(!anchor)return null;
+
+  const weeks=weeksBetween(anchor.date,targetDate);
+  const estimated=(weeks%2===0)
+    ? anchor.value
+    : (anchor.value===1 ? 2 : 1);
+
+  return {
+    value:estimated,
+    weeks:weeks,
+    anchor:anchor
+  };
+}
+
+function formatInputDate(value){
+  if(!value)return "";
+  const p=value.split("-");
+  if(p.length!==3)return "";
+  return formatDate(new Date(Number(p[0]),Number(p[1])-1,Number(p[2])));
+}
+
+function renderFutureResult(title,main,note,type){
+  const result=document.getElementById("futureResult");
+  const mainEl=document.getElementById("futureResultMain");
+
+  result.className="future-result show "+type;
+  document.getElementById("futureResultTitle").textContent=title;
+  mainEl.textContent=main;
+  mainEl.className="future-result-main";
+
+  if(main.includes("MAÑANA") || main.includes("(1)")){
+    mainEl.classList.add("morning");
+  }else if(main.includes("TARDE") || main.includes("(2)")){
+    mainEl.classList.add("afternoon");
+  }else if(main.includes("LIBRE")){
+    mainEl.classList.add("free");
+  }
+
+  document.getElementById("futureResultNote").innerHTML=note;
+}
+
+function consultFutureShift(){
+  const value=document.getElementById("futureDate").value;
+
+  if(!value){
+    renderFutureResult(
+      "Consulta",
+      "Selecciona una fecha",
+      "Indica la fecha que quieres consultar.",
+      ""
+    );
+    return;
+  }
+
+  const p=value.split("-");
+  const target=new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));
+  target.setHours(0,0,0,0);
+
+  const readable=formatInputDate(value);
+  const actual=getActualShiftForDate(target);
+
+  /* El Excel real siempre tiene prioridad. */
+  if(actual!==undefined){
+    if(actual==="L"){
+      renderFutureResult(
+        readable,
+        "LIBRE",
+        "<strong>Turno confirmado según el Excel cargado.</strong><br>"+
+        "El dato real del archivo tiene prioridad sobre cualquier estimación.",
+        "free-result"
+      );
+    }else{
+      renderFutureResult(
+        readable,
+        "TURNO "+actual+" — "+shiftLabel(actual).toUpperCase(),
+        "<strong>Turno confirmado según el Excel cargado.</strong><br>"+
+        "La información real del archivo reemplaza la estimación.",
+        "confirmed"
+      );
+    }
+    return;
+  }
+
+  const forecast=forecastShift(target);
+
+  if(!forecast){
+    renderFutureResult(
+      readable,
+      "SIN ESTIMACIÓN",
+      "No hay una referencia real anterior suficiente para calcular la rotación semanal de este trabajador.",
+      ""
+    );
+    return;
+  }
+
+  const weeks=forecast.weeks;
+  const weekText=weeks===1 ? "1 semana" : weeks+" semanas";
+
+  renderFutureResult(
+    readable,
+    "TURNO ESTIMADO "+forecast.value+" — "+
+      shiftLabel(forecast.value).toUpperCase(),
+    "<strong>Estimación basada en la rotación semanal.</strong><br>"+
+    "La referencia real más reciente es "+
+    formatDate(forecast.anchor.date)+
+    " (turno "+forecast.anchor.value+"). Han transcurrido "+
+    weekText+" de rotación.<br><br>"+
+    "⚠️ <strong>Este turno puede variar a día libre según el Excel del "+
+    months[target.getMonth()]+" "+target.getFullYear()+
+    " o por un cambio autorizado de turno.</strong>",
+    "estimated"
+  );
 }
 
 /* =========================================================
@@ -1355,6 +1573,12 @@ async function importExcel(file){
    EVENTOS
    ========================================================= */
 
+document.getElementById("futureButton").onclick=consultFutureShift;
+
+document.getElementById("futureDate").addEventListener("change",()=>{
+  document.getElementById("futureResult").classList.remove("show");
+});
+
 document.getElementById("workerSelector").onclick=()=>{
   toggleWorkerMenu();
 };
@@ -1445,6 +1669,7 @@ loadSaved();
 renderWorkerSelector();
 renderHome();
 renderCalendar();
+consultFutureShift();
 
 if("serviceWorker" in navigator){
   navigator.serviceWorker
