@@ -930,7 +930,7 @@ function loadSaved(){
    ========================================================= */
 
 /*
-  Convierte valores del Excel a códigos de turno.
+  Convierte los valores del Excel a códigos de turno.
 */
 function parseShiftValue(value){
   if(value===null || value===undefined)return undefined;
@@ -943,11 +943,7 @@ function parseShiftValue(value){
 
   const number=Number(value);
 
-  if(
-    Number.isInteger(number) &&
-    number>=1 &&
-    number<=4
-  ){
+  if(Number.isInteger(number) && number>=1 && number<=4){
     return number;
   }
 
@@ -963,125 +959,14 @@ function isDayNumber(value){
 }
 
 /*
-  Detecta una fila que contiene una secuencia suficiente de días.
+  Busca una fila que realmente parezca la fila de días.
+  La condición 1-2-3 consecutivos evita confundirla con
+  filas de cantidades, totales u otros números.
 */
-function findDayRow(rows){
-  let best=null;
+function findDayRows(rows){
+  const result=[];
 
   for(let r=0;r<rows.length;r++){
-    const row=rows[r]||[];
-    const positions=[];
-    const seen=new Set();
-
-    for(let c=0;c<row.length;c++){
-      if(!isDayNumber(row[c]))continue;
-
-      const day=Number(row[c]);
-
-      if(seen.has(day))continue;
-
-      seen.add(day);
-      positions.push({
-        col:c,
-        day
-      });
-    }
-
-    if(positions.length<7)continue;
-
-    let score=positions.length;
-
-    if(seen.has(1))score+=20;
-    if(seen.has(31))score+=10;
-
-    /*
-      Preferimos filas donde 1,2,3 aparecen consecutivamente.
-    */
-    for(let i=0;i<positions.length-2;i++){
-      if(
-        positions[i].day===1 &&
-        positions[i+1].day===2 &&
-        positions[i+2].day===3
-      ){
-        score+=20;
-        break;
-      }
-    }
-
-    if(!best || score>best.score){
-      best={
-        row:r,
-        positions,
-        score
-      };
-    }
-  }
-
-  return best;
-}
-
-/*
-  Busca bloques de trabajadores alrededor de las filas de días.
-
-  El Excel real puede tener más de un bloque de trabajadores,
-  por lo que NO nos detenemos después del primer grupo.
-*/
-function findWorkerBlocks(rows){
-  const blocks=[];
-  const usedRows=new Set();
-
-  for(let r=0;r<rows.length;r++){
-    const dayInfo=findDayRowNear(rows,r);
-
-    if(!dayInfo)continue;
-
-    const dayRow=dayInfo.row;
-
-    if(usedRows.has(dayRow))continue;
-
-    /*
-      Solo aceptamos la fila de días si hay nombres debajo.
-    */
-    const workerRows=[];
-
-    for(
-      let rr=dayRow+1;
-      rr<Math.min(rows.length,dayRow+18);
-      rr++
-    ){
-      const row=rows[rr]||[];
-      const name=findNameInRow(row);
-
-      if(name){
-        workerRows.push({
-          row:rr,
-          name
-        });
-      }else if(workerRows.length){
-        /*
-          Un pequeño separador puede aparecer antes del siguiente bloque.
-          Seguimos buscando porque el Excel puede contener otro bloque.
-          Pero no absorbemos filas sin nombre.
-        */
-        continue;
-      }
-    }
-
-    if(workerRows.length){
-      blocks.push({
-        dayInfo,
-        workers:workerRows
-      });
-
-      usedRows.add(dayRow);
-    }
-  }
-
-  return blocks;
-}
-
-function findDayRowNear(rows,startRow){
-  for(let r=startRow;r<Math.min(rows.length,startRow+1);r++){
     const row=rows[r]||[];
     const positions=[];
     const seen=new Set();
@@ -1097,77 +982,77 @@ function findDayRowNear(rows,startRow){
       positions.push({col:c,day});
     }
 
-    if(positions.length>=7){
-      return {
-        row:r,
-        positions,
-        score:positions.length
-      };
+    if(positions.length<7)continue;
+
+    let hasSequence=false;
+
+    for(let i=0;i<positions.length-2;i++){
+      if(
+        positions[i].day===1 &&
+        positions[i+1].day===2 &&
+        positions[i+2].day===3
+      ){
+        hasSequence=true;
+        break;
+      }
     }
+
+    if(!hasSequence)continue;
+
+    result.push({
+      row:r,
+      positions
+    });
   }
 
-  return null;
+  return result;
 }
 
 /*
-  Un trabajador se identifica por texto no numérico.
-  En el formato real, el nombre está antes de los días.
+  Una celda candidata a nombre debe ser texto con al menos
+  dos palabras. No usamos una lista fija de compañeros:
+  los nombres vienen del Excel.
 */
-function findNameInRow(row){
-  const max=Math.min(row.length,10);
+function looksLikeWorkerName(value){
+  if(value===null || value===undefined)return false;
 
-  for(let c=0;c<max;c++){
-    const value=row[c];
+  const text=String(value).trim();
 
-    if(value===null || value===undefined)continue;
+  if(!text)return false;
+  if(/\d/.test(text))return false;
 
-    const text=String(value).trim();
+  const normalized=normalizeText(text);
 
-    if(!text)continue;
-
-    const normalized=normalizeText(text);
-
-    if(
-      normalized==="CHARLES PAREDES" ||
-      normalized==="DANIELIS PARRA" ||
-      normalized==="HERNAN TREUMUN" ||
-      normalized==="YASMIN INOSTROSA" ||
-      normalized==="OLGA MILLAPAN" ||
-      normalized==="EDUARDO DOMINGUEZ" ||
-      normalized==="ELVIRA RAMOS" ||
-      normalized==="CRISTIAN CATRINAO" ||
-      normalized==="VANEZA PEREZ" ||
-      normalized==="JULIET PALACIOS" ||
-      normalized==="KAREN MARDONES" ||
-      normalized==="BARBARA GONZALEZ"
-    ){
-      return normalized;
-    }
-
-    /*
-      Regla general para futuros nombres:
-      dos o más palabras, sin números y con letras.
-    */
-    if(
-      /[A-ZÁÉÍÓÚÑÜ]/i.test(text) &&
-      !/\d/.test(text) &&
-      text.split(/\s+/).length>=2 &&
-      !["TURNO","TURNOS","MAÑANA","TARDE","LIBRE","REEMPLAZO"].includes(normalized)
-    ){
-      return normalized;
-    }
+  if(
+    normalized==="TURNO" ||
+    normalized==="TURNOS" ||
+    normalized==="NOMBRE" ||
+    normalized==="NOMBRES" ||
+    normalized==="MAÑANA" ||
+    normalized==="TARDE" ||
+    normalized==="LIBRE" ||
+    normalized==="REEMPLAZO" ||
+    normalized==="TOTAL" ||
+    normalized==="TOTAL GENERAL"
+  ){
+    return false;
   }
 
-  return null;
+  return (
+    text.split(/\s+/).length>=2 &&
+    /[A-ZÁÉÍÓÚÑÜ]/i.test(text)
+  );
 }
 
-function readWorkerSchedule(rows,workerRow,dayInfo){
+/*
+  Determina si una fila contiene suficientes códigos de turno
+  en las columnas de los días.
+*/
+function readScheduleFromRow(row,dayInfo){
   const schedule={};
-  const row=rows[workerRow]||[];
 
   for(const item of dayInfo.positions){
-    const value=row[item.col];
-    const shift=parseShiftValue(value);
+    const shift=parseShiftValue(row[item.col]);
 
     if(shift!==undefined){
       schedule[item.day]=shift;
@@ -1178,9 +1063,82 @@ function readWorkerSchedule(rows,workerRow,dayInfo){
 }
 
 /*
-  Obtiene mes del nombre del archivo.
-  Acepta nombres completos y abreviaturas.
+  Busca el nombre y la fila de días en ambas direcciones.
+
+  El formato que ya funcionaba en la aplicación tenía el nombre
+  del trabajador y, hasta cinco filas ARRIBA, la fila con los días.
+  Por eso primero buscamos hacia arriba. También aceptamos hacia
+  abajo para que el importador sea más tolerante con futuros Excel.
 */
+function findWorkerRecord(rows,nameRow,nameCol,dayRows){
+  const candidates=[];
+
+  for(const dayInfo of dayRows){
+    const distance=Math.abs(dayInfo.row-nameRow);
+
+    if(distance===0 || distance>8)continue;
+
+    const row=rows[nameRow]||[];
+    const schedule=readScheduleFromRow(row,dayInfo);
+
+    if(Object.keys(schedule).length<2)continue;
+
+    /*
+      Si el nombre está razonablemente cerca de la fila de días
+      y hay varios turnos reconocibles, es un bloque válido.
+    */
+    candidates.push({
+      dayInfo,
+      schedule,
+      distance,
+      direction:dayInfo.row<nameRow ? "above":"below"
+    });
+  }
+
+  if(!candidates.length)return null;
+
+  /*
+    Preferimos la fila de días que está ARRIBA del nombre,
+    porque corresponde al formato del Excel que ya utilizaba
+    la versión estable anterior.
+  */
+  candidates.sort((a,b)=>{
+    if(a.direction!==b.direction){
+      return a.direction==="above" ? -1 : 1;
+    }
+
+    return a.distance-b.distance;
+  });
+
+  return candidates[0];
+}
+
+function detectYearFromWorkbook(book,fileName){
+  let year=getYearFromText(fileName);
+
+  if(year)return year;
+
+  for(const sheetName of book.SheetNames){
+    const ws=book.Sheets[sheetName];
+
+    const rows=XLSX.utils.sheet_to_json(ws,{
+      header:1,
+      raw:true,
+      defval:null
+    });
+
+    for(const row of rows){
+      for(const value of row){
+        const found=getYearFromText(String(value??""));
+
+        if(found)return found;
+      }
+    }
+  }
+
+  return new Date().getFullYear();
+}
+
 function getMonthFromFilename(filename){
   const text=normalizeText(filename);
 
@@ -1230,7 +1188,7 @@ async function importExcel(file){
     if(monthFromFilename<0){
       alert(
         "No pude identificar el mes en el nombre del archivo.\n\n"+
-        "El nombre debe contener el mes, por ejemplo: AGOSTO, "+
+        "El nombre debe contener el mes, por ejemplo AGOSTO, "+
         "SEPTIEMBRE u OCTUBRE."
       );
       return;
@@ -1242,10 +1200,13 @@ async function importExcel(file){
       cellDates:true
     });
 
-    let allWorkers={};
+    const allWorkers={};
     let sourceSheet="";
-    let detectedDayRows=0;
+    let totalDayRows=0;
 
+    /*
+      Procesamos cada hoja independientemente.
+    */
     for(const sheetName of book.SheetNames){
       const ws=book.Sheets[sheetName];
 
@@ -1255,136 +1216,83 @@ async function importExcel(file){
         defval:null
       });
 
+      const dayRows=findDayRows(rows);
+
+      if(!dayRows.length)continue;
+
+      totalDayRows+=dayRows.length;
+
       /*
-        Buscamos TODAS las filas que contengan días.
+        IMPORTANTE:
+        ya no buscamos solamente CHARLES PAREDES.
+        Recorremos todas las celdas para encontrar nombres.
       */
       for(let r=0;r<rows.length;r++){
         const row=rows[r]||[];
 
-        const dayPositions=[];
-        const seen=new Set();
-
         for(let c=0;c<row.length;c++){
-          if(!isDayNumber(row[c]))continue;
+          if(!looksLikeWorkerName(row[c]))continue;
 
-          const day=Number(row[c]);
+          const name=normalizeText(row[c]);
 
-          if(seen.has(day))continue;
-
-          seen.add(day);
-          dayPositions.push({col:c,day});
-        }
-
-        if(dayPositions.length<7)continue;
-
-        /*
-          Exigimos que haya una secuencia 1,2,3 para distinguir
-          la fila de días de filas de totales u otros números.
-        */
-        let hasSequence=false;
-
-        for(let i=0;i<dayPositions.length-2;i++){
-          if(
-            dayPositions[i].day===1 &&
-            dayPositions[i+1].day===2 &&
-            dayPositions[i+2].day===3
-          ){
-            hasSequence=true;
-            break;
-          }
-        }
-
-        if(!hasSequence)continue;
-
-        detectedDayRows++;
-
-        /*
-          Los trabajadores normalmente están inmediatamente
-          debajo de la fila de días. Buscamos hasta 18 filas.
-        */
-        for(
-          let rr=r+1;
-          rr<Math.min(rows.length,r+18);
-          rr++
-        ){
-          const workerRow=rows[rr]||[];
-          const name=findNameInRow(workerRow);
-
-          if(!name)continue;
-
-          const schedule=readWorkerSchedule(
+          /*
+            Evita interpretar títulos repetidos como trabajadores.
+          */
+          const record=findWorkerRecord(
             rows,
-            rr,
-            {row:r,positions:dayPositions}
+            r,
+            c,
+            dayRows
           );
 
-          if(Object.keys(schedule).length===0)continue;
+          if(!record)continue;
 
+          /*
+            Si el mismo trabajador aparece más de una vez,
+            combinamos sus días.
+          */
           if(!allWorkers[name]){
-            allWorkers[name]=schedule;
-          }else{
-            /*
-              Si el mismo nombre aparece en otro bloque,
-              conservamos los datos encontrados y completamos
-              los días que falten.
-            */
-            allWorkers[name]={
-              ...allWorkers[name],
-              ...schedule
-            };
+            allWorkers[name]={};
           }
+
+          allWorkers[name]={
+            ...allWorkers[name],
+            ...record.schedule
+          };
         }
       }
 
       if(Object.keys(allWorkers).length){
-        sourceSheet=sheetName;
+        sourceSheet=sourceSheet || sheetName;
       }
     }
 
-    const workerCount=Object.keys(allWorkers).length;
+    const workerNames=Object.keys(allWorkers).filter(
+      name=>Object.keys(allWorkers[name]).length>=2
+    );
 
-    if(workerCount===0){
+    if(!workerNames.length){
       alert(
-        "No encontré trabajadores con turnos válidos en este Excel.\n\n"+
-        "Verifica que el archivo tenga una fila de días (1–31) "+
-        "y debajo los nombres de los trabajadores."
+        "No encontré trabajadores con turnos válidos.\n\n"+
+        "El Excel sí fue leído, pero no pude relacionar los nombres "+
+        "con la fila de días 1–31."
       );
       return;
     }
 
     /*
-      El año se busca primero en el nombre del archivo y luego
-      en todo el contenido del Excel.
+      Limpiamos registros sin suficientes datos.
     */
-    let year=getYearFromText(file.name);
+    const cleanedWorkers={};
 
-    if(!year){
-      const allText=[];
-
-      for(const sheetName of book.SheetNames){
-        const ws=book.Sheets[sheetName];
-
-        const rows=XLSX.utils.sheet_to_json(ws,{
-          header:1,
-          raw:true,
-          defval:null
-        });
-
-        for(const row of rows){
-          for(const value of row){
-            if(value!==null && value!==undefined){
-              allText.push(String(value));
-            }
-          }
-        }
-      }
-
-      year=getYearFromText(allText.join(" "));
+    for(const name of workerNames){
+      cleanedWorkers[name]=allWorkers[name];
     }
 
-    if(!year){
-      year=new Date().getFullYear();
-    }
+    const year=detectYearFromWorkbook(
+      book,
+      file.name
+    );
 
     const monthKey=key(
       year,
@@ -1392,24 +1300,24 @@ async function importExcel(file){
     );
 
     /*
-      IMPORTANTE:
-      solo reemplazamos el mes importado.
+      Solo sustituimos el mes que acaba de cargarse.
       Los demás meses permanecen intactos.
     */
     schedules={
       ...schedules,
-      [monthKey]:allWorkers
+      [monthKey]:cleanedWorkers
     };
 
     /*
-      Si el trabajador actualmente seleccionado existe en el nuevo mes,
-      lo mantenemos. Si no, Charles sigue siendo el predeterminado.
+      Si el trabajador seleccionado existe, se mantiene.
+      Si no, Charles tiene prioridad; si Charles no existe,
+      se selecciona el primero del Excel.
     */
-    if(!allWorkers[selectedWorker]){
-      if(allWorkers["CHARLES PAREDES"]){
+    if(!cleanedWorkers[selectedWorker]){
+      if(cleanedWorkers["CHARLES PAREDES"]){
         selectedWorker="CHARLES PAREDES";
       }else{
-        selectedWorker=Object.keys(allWorkers)[0];
+        selectedWorker=workerNames[0];
       }
     }
 
@@ -1426,13 +1334,11 @@ async function importExcel(file){
     showView("calendar");
 
     alert(
-      "Turnos importados correctamente.\n\n"+
+      "Excel importado correctamente.\n\n"+
       "Mes: "+months[monthFromFilename]+" "+year+"\n"+
-      "Trabajadores encontrados: "+workerCount+"\n"+
-      "Filas de días detectadas: "+detectedDayRows+"\n"+
-      "Hoja: "+sourceSheet+"\n\n"+
-      "Ahora puedes tocar el nombre de la parte superior "+
-      "para cambiar de trabajador."
+      "Trabajadores encontrados: "+workerNames.length+"\n\n"+
+      "Ahora toca el nombre de arriba para seleccionar "+
+      "cualquier trabajador."
     );
 
   }catch(error){
@@ -1440,7 +1346,7 @@ async function importExcel(file){
 
     alert(
       "No fue posible interpretar este archivo Excel.\n\n"+
-      "Verifica que corresponda al formato utilizado por la empresa."
+      "Detalle técnico: "+(error.message || error)
     );
   }
 }
